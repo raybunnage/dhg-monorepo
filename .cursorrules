@@ -1,0 +1,496 @@
+{
+    "rules": [
+      {
+        "type": "React",
+        "instructions": "Use functional components with hooks (useState, useEffect, etc.). Prefer modular components with single responsibility and leverage TypeScript for type safety. Implement responsive design using Tailwind CSS.",
+        "componentStructure": {
+          "namingConventions": {
+            "componentNames": "PascalCase",
+            "directoryNames": "lowercase-with-dashes"
+          },
+          "bestPractices": {
+            "componentDeclaration": "function",
+            "hooksUsage": ["useState", "useEffect", "useContext"],
+            "followHooksRules": true,
+            "preferFunctionalComponents": true,
+            "avoidInlineFunctions": true
+          },
+          "styling": {
+            "approach": {
+              "primary": "Tailwind CSS with modules",
+              "conventions": [
+                "Keep styles close to components",
+                "Use utility classes first"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "type": "Vite",
+        "instructions": "Leverage Vite's fast bundling and hot module replacement. Use dynamic importing for lazy-loaded routes and components."
+      },
+      {
+        "type": "DeploymentWorkflow",
+        "description": "Vercel deployment workflow management",
+        "deploymentFramework": {
+          "environments": {
+            "development": {
+              "purpose": "Local development and testing",
+              "configuration": {
+                "debugEnabled": true
+              }
+            },
+            "production": {
+              "purpose": "Live environment",
+              "configuration": {
+                "optimizeForProduction": true
+              }
+            }
+          },
+          "bestPractices": {
+            "deployment": [
+              "Use semantic versioning",
+              "Monitor deployment health",
+              "Test in development before production"
+            ]
+          }
+        }
+      },
+      {
+        "type": "Documentation",
+        "instructions": "Maintain clear documentation in markdown (.md) files within the docs directory.",
+        "structure": {
+          "location": "docs/",
+          "files": {
+            "deployment-guide.md": {
+              "purpose": "Main deployment and setup documentation",
+              "sections": [
+                "Project Overview",
+                "Environment Setup",
+                "Local Development",
+                "Deployment",
+                "Project Structure"
+              ],
+              "beginnerGuidance": {
+                "environmentExplanations": {
+                  "production": "The live website that users see at dhg-hub.org",
+                  "development": "A separate version for testing new features before they go live",
+                  "preview": "Temporary versions to check individual features while they're being built"
+                },
+                "vercelConcepts": {
+                  "deployment": "The process of making your website live on the internet",
+                  "buildCommand": "Instructions that tell Vercel how to create the final version of your website",
+                  "rootDirectory": "The main folder containing your website code",
+                  "outputDirectory": "Where the final, built version of your website is stored"
+                },
+                "branchingStrategy": {
+                  "main": "Your primary code that runs the live website",
+                  "development": "Where new features are combined and tested",
+                  "feature": "Individual branches for working on new features"
+                }
+              },
+              "commonTasks": {
+                "localDevelopment": "How to run and test the website on your computer",
+                "makingChanges": "Steps to create and test new features",
+                "deployment": "How to get your changes onto the live website"
+              }
+            }
+          },
+          "formatting": {
+            "useMarkdown": true,
+            "includeCodeBlocks": true,
+            "maintainTableOfContents": true,
+            "style": {
+              "language": "Clear and simple, avoiding technical jargon",
+              "examples": "Include practical examples for each concept",
+              "screenshots": "Add visual guides for important steps"
+            }
+          }
+        }
+      },
+      {
+        "type": "Environments",
+        "description": "Environment configuration and branching strategy",
+        "environments": {
+          "main": {
+            "type": "production",
+            "description": "Production environment - live website",
+            "branch": "main",
+            "url": "dhg-hub.org",
+            "protection": {
+              "requirePullRequest": true,
+              "requireApprovals": 1,
+              "enforceTests": true
+            }
+          },
+          "development": {
+            "type": "development",
+            "description": "Development environment for testing features",
+            "branch": "development",
+            "url": "dev.dhg-hub.org",
+            "protection": {
+              "requirePullRequest": true,
+              "enforceTests": true
+            }
+          },
+          "preview": {
+            "type": "preview",
+            "description": "Preview environments for feature branches and migrations",
+            "branches": {
+              "pattern": ["feature/*", "migration/*"],
+              "naming": {
+                "feature": "feature/[feature-name]",
+                "migration": "migration/[migration-name]"
+              }
+            },
+            "url": "{branch-name}.dhg-hub.org",
+            "cleanup": {
+              "afterMerge": true,
+              "inactiveDays": 7
+            }
+          }
+        },
+        "workflow": {
+          "featureDevelopment": [
+            "Create feature branch from development",
+            "Develop and test locally",
+            "Push to trigger preview deployment",
+            "Create PR to development branch",
+            "After approval, merge to development",
+            "Test in development environment",
+            "Create PR from development to main",
+            "After approval, merge to main for production"
+          ],
+          "migrations": [
+            "Create migration branch from main",
+            "Develop migration scripts",
+            "Test in preview environment",
+            "Create PR to main",
+            "Schedule production deployment"
+          ]
+        }
+      },
+      {
+        "type": "InitialApps",
+        "description": "Baseline applications for monorepo testing and setup",
+        "applications": {
+          "dhg-baseline": {
+            "type": "frontend",
+            "description": "Minimal baseline application for establishing monorepo patterns",
+            "tech-stack": {
+              "framework": "React + Vite",
+              "styling": "Tailwind CSS",
+              "language": "TypeScript"
+            },
+            "structure": {
+              "path": "apps/dhg-baseline",
+              "minimal-components": [
+                "App.tsx",
+                "HomePage.tsx",
+                "StatusIndicator.tsx"
+              ],
+              "features": [
+                "Basic routing",
+                "Environment indicator",
+                "Health check endpoint"
+              ]
+            },
+            "deployment": {
+              "vercel": {
+                "project-name": "dhg-baseline",
+                "domains": {
+                  "production": "baseline.dhg-hub.org",
+                  "development": "dev.baseline.dhg-hub.org",
+                  "preview": "{branch}.baseline.dhg-hub.org"
+                }
+              }
+            }
+          },
+          "dhg-test": {
+            "type": "frontend",
+            "description": "Test application for validating monorepo configurations",
+            "tech-stack": {
+              "framework": "React + Vite",
+              "styling": "Tailwind CSS",
+              "language": "TypeScript"
+            },
+            "structure": {
+              "path": "apps/dhg-test",
+              "minimal-components": [
+                "App.tsx",
+                "TestPage.tsx",
+                "EnvironmentBanner.tsx"
+              ],
+              "features": [
+                "Basic routing",
+                "Environment display",
+                "Configuration test page"
+              ]
+            },
+            "deployment": {
+              "vercel": {
+                "project-name": "dhg-test",
+                "domains": {
+                  "production": "test.dhg-hub.org",
+                  "development": "dev.test.dhg-hub.org",
+                  "preview": "{branch}.test.dhg-hub.org"
+                }
+              }
+            }
+          }
+        },
+        "monorepo-structure": {
+          "root": "/",
+          "shared-packages": "packages/",
+          "applications": "apps/",
+          "shared-config": {
+            "typescript": "tsconfig.base.json",
+            "eslint": ".eslintrc.base.js",
+            "tailwind": "tailwind.config.base.js"
+          },
+          "workspace-config": {
+            "package-manager": "pnpm",
+            "monorepo-tool": "turborepo"
+          }
+        },
+        "initial-setup-steps": [
+          "Initialize monorepo with pnpm workspace",
+          "Create apps directory structure",
+          "Set up shared configurations",
+          "Initialize both applications with minimal setup",
+          "Configure Vercel projects",
+          "Test deployment pipeline with all environments"
+        ]
+      },
+      {
+        "type": "GitIgnore",
+        "description": "Monorepo-specific gitignore patterns",
+        "structure": {
+          "root": {
+            "path": "/.gitignore",
+            "patterns": [
+              "# Dependencies",
+              "node_modules/",
+              ".pnpm-store/",
+              
+              "# Build outputs",
+              "dist/",
+              "build/",
+              ".next/",
+              "out/",
+              
+              "# Environment",
+              ".env*",
+              "!.env.example",
+              
+              "# Vercel",
+              ".vercel/",
+              
+              "# Cache",
+              ".turbo/",
+              ".cache/",
+              
+              "# Logs",
+              "*.log",
+              "npm-debug.log*",
+              "yarn-debug.log*",
+              "yarn-error.log*",
+              "pnpm-debug.log*",
+              
+              "# Editor directories",
+              ".vscode/",
+              ".idea/",
+              "*.swp",
+              "*.swo",
+              
+              "# Testing",
+              "coverage/",
+              
+              "# OS specific",
+              ".DS_Store",
+              "Thumbs.db"
+            ]
+          },
+          "apps": {
+            "description": "App-specific gitignore patterns",
+            "path": "apps/*/.gitignore",
+            "patterns": [
+              "# App-specific build outputs",
+              "dist/",
+              ".next/",
+              
+              "# Local env files",
+              ".env*.local"
+            ]
+          },
+          "packages": {
+            "description": "Shared package gitignore patterns",
+            "path": "packages/*/.gitignore",
+            "patterns": [
+              "# Package build outputs",
+              "dist/",
+              "lib/",
+              
+              "# Type definitions",
+              "*.d.ts",
+              "!src/**/*.d.ts"
+            ]
+          }
+        },
+        "bestPractices": {
+          "structure": [
+            "Use root .gitignore for workspace-wide patterns",
+            "Use app-specific .gitignore for unique app requirements",
+            "Use package-specific .gitignore for library build artifacts"
+          ],
+          "maintenance": [
+            "Keep root .gitignore as primary source of truth",
+            "Only add app/package specific patterns when necessary",
+            "Document any non-obvious ignore patterns"
+          ]
+        }
+      },
+      {
+        "type": "Scripts",
+        "description": "Monorepo script organization and standards",
+        "structure": {
+          "root": {
+            "path": "/scripts",
+            "subdirectories": {
+              "setup": {
+                "description": "Initial setup and configuration scripts",
+                "examples": [
+                  "init-workspace.sh",
+                  "setup-env.sh",
+                  "create-app.sh"
+                ]
+              },
+              "build": {
+                "description": "Build-related scripts",
+                "examples": [
+                  "build-all.sh",
+                  "build-affected.sh",
+                  "clean-builds.sh"
+                ]
+              },
+              "deploy": {
+                "description": "Deployment automation scripts",
+                "examples": [
+                  "deploy-app.sh",
+                  "verify-deployment.sh",
+                  "rollback.sh"
+                ]
+              },
+              "dev": {
+                "description": "Development workflow scripts",
+                "examples": [
+                  "start-dev.sh",
+                  "watch-apps.sh",
+                  "sync-deps.sh"
+                ]
+              },
+              "ci": {
+                "description": "CI/CD pipeline scripts",
+                "examples": [
+                  "verify-pr.sh",
+                  "run-tests.sh",
+                  "check-formatting.sh"
+                ]
+              },
+              "utils": {
+                "description": "Utility and helper scripts",
+                "examples": [
+                  "update-versions.sh",
+                  "cleanup-branches.sh",
+                  "generate-docs.sh"
+                ]
+              }
+            }
+          },
+          "conventions": {
+            "naming": {
+              "pattern": "kebab-case",
+              "extension": ".sh or .ts for complex scripts"
+            },
+            "documentation": {
+              "requirements": [
+                "Script purpose in header comment",
+                "Usage examples",
+                "Required environment variables",
+                "Dependencies"
+              ]
+            },
+            "implementation": {
+              "requirements": [
+                "Error handling",
+                "Logging",
+                "Exit codes",
+                "Parameter validation"
+              ]
+            }
+          }
+        },
+        "bestPractices": {
+          "general": [
+            "Scripts should be executable from any directory",
+            "Use relative paths from script location",
+            "Include --help option for usage information",
+            "Support both interactive and CI usage"
+          ],
+          "monorepo": [
+            "Support running against all or specific packages",
+            "Respect workspace dependencies",
+            "Use pnpm/turbo for package operations",
+            "Handle cross-package operations"
+          ],
+          "maintenance": [
+            "Keep scripts focused and single-purpose",
+            "Document dependencies and prerequisites",
+            "Version control script changes",
+            "Test scripts in isolation"
+          ]
+        }
+      },
+      {
+        "type": "ScriptStandards",
+        "description": "Standards for shell scripts and file generation",
+        "fileGeneration": {
+          "json": {
+            "heredoc": {
+              "preferred": "printf with explicit newline",
+              "example": "printf '%s\n' '{\"key\": \"value\"}' > filename.json",
+              "avoidPatterns": [
+                "cat with EOL/EOF with trailing spaces",
+                "Heredoc for simple JSON",
+                "Any trailing whitespace in JSON generation"
+              ],
+              "reasons": [
+                "Prevents whitespace issues in JSON",
+                "Ensures exact string output with proper newlines",
+                "Ensures consistent file generation"
+              ]
+            },
+            "validation": {
+              "required": true,
+              "command": "jq empty filename.json",
+              "errorHandling": "Exit script on invalid JSON"
+            }
+          },
+          "yaml": {
+            "heredoc": {
+              "preferred": "cat with YAML_END",
+              "marker": "Must be quoted to prevent expansion"
+            }
+          },
+          "bestPractices": [
+            "Always quote heredoc markers",
+            "Use distinct markers per file type (JSON_END, YAML_END, etc.)",
+            "Validate generated files when possible",
+            "Avoid trailing spaces in heredoc markers",
+            "Use tee for JSON to prevent whitespace issues"
+          ]
+        }
+      }
+    ]
+  }
