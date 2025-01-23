@@ -6,9 +6,11 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "turbo-ignore": "node -e \"process.exit(require('turbo').shouldOptimize(__dirname))\""
   },
   "devDependencies": {
+    "@vercel/node": "^5.0.2",
     "turbo": "latest"
   }
 }
