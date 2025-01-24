@@ -1,11 +1,7 @@
 {
   "name": "dhg-test",
   "framework": "vite",
-  "buildCommand": "pnpm build",
+  "buildCommand": "cd ../.. && pnpm install && cd apps/dhg-test && pnpm build",
   "outputDirectory": "dist",
-  "installCommand": "cd ../.. && pnpm install",
-  "ignoreCommand": "git diff HEAD^ HEAD --quiet ./",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "installCommand": "pnpm install"
 }
