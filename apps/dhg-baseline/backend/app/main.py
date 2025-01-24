@@ -50,14 +50,14 @@ async def health_check(supabase: Client = Depends(get_supabase)) -> Dict[str, bo
         return {
             "api_status": True,
             "supabase_connected": True,
-            "has_session": response.session is not None
+            "has_session": response.session is not None,
         }
     except Exception as e:
         logger.error(f"Health check failed - Supabase error: {str(e)}")
         return {
             "api_status": True,  # API is still running
             "supabase_connected": False,
-            "has_session": False
+            "has_session": False,
         }
 
 

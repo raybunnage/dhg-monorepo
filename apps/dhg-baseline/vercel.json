@@ -2,10 +2,18 @@
   "name": "dhg-baseline",
   "framework": "vite",
   "buildCommand": "pnpm build",
+  "devCommand": "pnpm dev",
   "outputDirectory": "dist",
-  "installCommand": "cd ../.. && pnpm install",
+  "installCommand": "pnpm install",
   "ignoreCommand": "git diff HEAD^ HEAD --quiet ./",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "development": true,
+      "feature/*": true
+    }
+  }
 }
