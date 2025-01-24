@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
 from .core.config import get_settings, Settings
 import logging
+from typing import Dict
 
 # Configure logging
 logging.basicConfig(
@@ -15,7 +16,7 @@ app = FastAPI(title="DHG Baseline API")
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Vite's default port
+    allow_origins=["http://localhost:5177"],  # Updated port
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,17 +36,29 @@ async def root():
     }
 
 
-@app.get("/api/health")
-async def health_check(supabase: Client = Depends(get_supabase)):
+@app.get("/api/health", response_model=Dict[str, bool])
+async def health_check(supabase: Client = Depends(get_supabase)) -> Dict[str, bool]:
+    """
+    Check the health of the API and Supabase connection.
+    Returns:
+        Dict with status indicators for API and Supabase connection
+    """
     try:
-        # Basic Supabase connection test
-        await supabase.auth.get_user()
-        supabase_status = True
+        # Test basic Supabase connectivity
+        response = await supabase.auth.get_session()
+        logger.info("Health check - Supabase connection successful")
+        return {
+            "api_status": True,
+            "supabase_connected": True,
+            "has_session": response.session is not None
+        }
     except Exception as e:
-        logger.error(f"Supabase connection error: {e}")
-        supabase_status = False
-
-    return {"status": "healthy", "supabase_connected": supabase_status}
+        logger.error(f"Health check failed - Supabase error: {str(e)}")
+        return {
+            "api_status": True,  # API is still running
+            "supabase_connected": False,
+            "has_session": False
+        }
 
 
 @app.get("/api/protected")
