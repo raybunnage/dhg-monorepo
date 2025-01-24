@@ -26,6 +26,15 @@ def get_supabase(settings: Settings = Depends(get_settings)) -> Client:
     return create_client(settings.supabase_url, settings.supabase_key)
 
 
+@app.get("/")
+async def root():
+    return {
+        "message": "Welcome to DHG Baseline API",
+        "docs": "/docs",
+        "health": "/api/health",
+    }
+
+
 @app.get("/api/health")
 async def health_check(supabase: Client = Depends(get_supabase)):
     try:

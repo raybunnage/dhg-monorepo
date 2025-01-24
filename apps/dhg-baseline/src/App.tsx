@@ -1,23 +1,20 @@
 import React from 'react';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import LoginPage from './components/LoginPage';
-import Dashboard from './components/Dashboard';
-
-function AuthenticatedApp() {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  return user ? <Dashboard /> : <LoginPage />;
-}
+import { AuthProvider } from './contexts/AuthContext';
+import { LoginPage } from './pages/LoginPage';
+import { DashboardPage } from './pages/DashboardPage';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 function App() {
   return (
-    <AuthProvider>
-      <AuthenticatedApp />
-    </AuthProvider>
+    <Router>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+        </Routes>
+      </AuthProvider>
+    </Router>
   );
 }
 
