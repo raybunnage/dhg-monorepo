@@ -1,6 +1,0 @@
-Branch: feature/supabase-baseline
-Timestamp: 20250124_203847
-Files:
-  - apps/dhg-baseline/.env
-  - apps/dhg-baseline/backend/.env
-  - apps/dhg-test/.env
