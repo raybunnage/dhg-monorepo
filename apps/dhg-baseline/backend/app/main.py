@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
 from .core.config import get_settings, Settings
 import logging
-from typing import Dict
+from typing import Dict, Optional
 
 # Configure logging
 logging.basicConfig(
@@ -44,23 +44,40 @@ async def health_check(supabase: Client = Depends(get_supabase)) -> Dict[str, bo
         Dict with status indicators for API and Supabase connection
     """
     try:
-        # Test basic Supabase connectivity
-        response = await supabase.auth.get_session()
+        # Test a basic Supabase operation that doesn't require auth
+        response = await supabase.auth.get_url()
+        logger.info(f"Supabase URL response: {response}")
         logger.info("Health check - Supabase connection successful")
-        return {
-            "api_status": True,
-            "supabase_connected": True,
-            "has_session": response.session is not None,
-        }
+        return {"api_status": True, "supabase_connected": True}
     except Exception as e:
-        logger.error(f"Health check failed - Supabase error: {str(e)}")
-        return {
-            "api_status": True,  # API is still running
-            "supabase_connected": False,
-            "has_session": False,
-        }
+        logger.error(
+            f"Health check failed - Supabase error: {type(e).__name__}: {str(e)}"
+        )
+        return {"api_status": True, "supabase_connected": False}
 
 
 @app.get("/api/protected")
 async def protected_route(supabase: Client = Depends(get_supabase)):
     return {"message": "This is a protected route", "data": "Secret data"}
+
+
+@app.get("/api/auth/status", response_model=Dict[str, bool | Optional[str]])
+async def auth_status(supabase: Client = Depends(get_supabase)):
+    """
+    Check authentication status and return user info if authenticated.
+    Returns:
+        Dict with auth status and user email if authenticated
+    """
+    try:
+        response = await supabase.auth.get_session()
+        is_authenticated = response.session is not None
+        return {
+            "is_authenticated": is_authenticated,
+            "user_email": response.session.user.email if is_authenticated else None,
+        }
+    except Exception as e:
+        logger.error(f"Auth status check failed: {str(e)}")
+        return {
+            "is_authenticated": False,
+            "user_email": None,
+        }
