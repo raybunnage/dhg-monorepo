@@ -92,5 +92,5 @@ async def get_environment():
         "supabase_url": os.getenv("VITE_SUPABASE_URL", "not_set"),
         # Don't expose the actual key, just whether it's set
         "has_supabase_key": bool(os.getenv("VITE_SUPABASE_ANON_KEY")),
-        "debug_mode": os.getenv("DEBUG", "false").lower() == "true"
+        "debug_mode": os.getenv("DEBUG", "false").lower() == "true",
     }
