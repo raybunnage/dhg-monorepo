@@ -13,16 +13,12 @@ class Settings(BaseSettings):
         "SUPABASE_URL", "https://jdksnfkupzywjdfefkyj.supabase.co"
     )
     # Anon key for public operations
-    supabase_anon_key: str = os.getenv("SUPABASE_ANON_KEY", "")
-
-    # Service role key for admin operations
-    supabase_key: str = os.getenv(
-        "SUPABASE_SERVICE_ROLE_KEY", ""
-    )  # Get this from Supabase dashboard
+    supabase_key: str = os.getenv("SUPABASE_ANON_KEY", "")  # Default to anon key
     debug: bool = os.getenv("DEBUG", "False").lower() == "true"
 
     class Config:
         env_file = ".env"
+        extra = "allow"  # Allow extra fields from env
 
 
 @lru_cache()
