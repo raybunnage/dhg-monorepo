@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "Running pre-commit hook..."
+
+# Clean Python bytecode files
+./scripts/clean-python.sh
+
+# If cleanup failed, prevent commit
+if [ $? -ne 0 ]; then
+    echo "Python cleanup failed"
+    exit 1
+fi
+
+exit 0 
