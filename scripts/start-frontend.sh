@@ -45,12 +45,18 @@ kill_port() {
     fi
 }
 
-# Default Vite ports
-kill_port 5173  # Default Vite port
-kill_port 5174  # Common alternative
-kill_port 5175  # Just in case
-kill_port 5176  # Just in case
-kill_port 5177  # Just in case
+# App-specific Vite ports
+case "$APP_NAME" in
+    "dhg-baseline")
+        kill_port 5177  # dhg-baseline frontend port
+        ;;
+    "dhg-test")
+        kill_port 5178  # dhg-test frontend port
+        ;;
+    *)
+        log "Warning: No specific port defined for $APP_NAME"
+        ;;
+esac
 
 # Install dependencies if node_modules doesn't exist
 if [ ! -d "node_modules" ]; then
