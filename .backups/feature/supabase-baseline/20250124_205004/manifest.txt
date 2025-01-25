@@ -1,0 +1,7 @@
+Branch: feature/supabase-baseline
+Timestamp: 20250124_205004
+Files:
+  - packages/auth-service/.env
+  - apps/dhg-baseline/.env
+  - apps/dhg-baseline/backend/.env
+  - apps/dhg-test/.env
