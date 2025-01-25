@@ -1,5 +1,4 @@
 {
-  "name": "dhg-baseline",
   "framework": "vite",
   "buildCommand": "pnpm build",
   "devCommand": "pnpm dev",
@@ -13,7 +12,8 @@
     "deploymentEnabled": {
       "main": true,
       "development": true,
-      "feature/*": true
+      "feature/*": true,
+      "preview": true
     }
   }
 }
