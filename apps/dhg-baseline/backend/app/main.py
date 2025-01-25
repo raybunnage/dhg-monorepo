@@ -4,6 +4,7 @@ from supabase import create_client, Client
 from .core.config import get_settings, Settings
 import logging
 from typing import Dict, Optional
+import os
 
 # Configure logging
 logging.basicConfig(
@@ -81,3 +82,15 @@ async def auth_status(supabase: Client = Depends(get_supabase)):
             "is_authenticated": False,
             "user_email": None,
         }
+
+
+@app.get("/api/env")
+async def get_environment():
+    """Test endpoint to verify environment configuration"""
+    return {
+        "environment": os.getenv("VITE_APP_ENV", "not_set"),
+        "supabase_url": os.getenv("VITE_SUPABASE_URL", "not_set"),
+        # Don't expose the actual key, just whether it's set
+        "has_supabase_key": bool(os.getenv("VITE_SUPABASE_ANON_KEY")),
+        "debug_mode": os.getenv("DEBUG", "false").lower() == "true"
+    }
