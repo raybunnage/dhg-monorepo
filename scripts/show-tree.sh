@@ -33,15 +33,15 @@ show_app_tree() {
             print_color $GREEN "│   ├── pages"
             find "$app_path/src/pages" -name "*.tsx" -o -name "*.ts" | sed 's|.*/||' | sed 's/^/│   │   ├── /'
         fi
-        # Utils
-        if [ -d "$app_path/src/utils" ]; then
-            print_color $GREEN "│   ├── utils"
-            find "$app_path/src/utils" -name "*.ts" | sed 's|.*/||' | sed 's/^/│   │   ├── /'
+        # Hooks
+        if [ -d "$app_path/src/hooks" ]; then
+            print_color $GREEN "│   ├── hooks"
+            find "$app_path/src/hooks" -name "*.ts" | sed 's|.*/||' | sed 's/^/│   │   ├── /'
         fi
-        # Types
-        if [ -d "$app_path/src/types" ]; then
-            print_color $GREEN "│   ├── types"
-            find "$app_path/src/types" -name "*.ts" | sed 's|.*/||' | sed 's/^/│   │   ├── /'
+        # Context
+        if [ -d "$app_path/src/context" ]; then
+            print_color $GREEN "│   ├── context"
+            find "$app_path/src/context" -name "*.ts" -o -name "*.tsx" | sed 's|.*/||' | sed 's/^/│   │   ├── /'
         fi
         # Root files in src
         find "$app_path/src" -maxdepth 1 -type f \( -name "*.tsx" -o -name "*.ts" \) | sed 's|.*/||' | sed 's/^/│   ├── /'
@@ -52,27 +52,80 @@ show_app_tree() {
     find "$app_path" -maxdepth 1 -type f \( -name "*.json" -o -name "*.js" -o -name "*.ts" -o -name "*.config.*" \) | sed 's|.*/||' | sed 's/^/│   ├── /'
 }
 
-# Function to show shared packages
-show_packages() {
-    print_color $YELLOW "\n📦 packages"
+# Function to show backend structure
+show_backend() {
+    print_color $YELLOW "\n🔧 backend"
     
-    # List all packages
-    for package_dir in packages/*; do
-        if [ -d "$package_dir" ]; then
-            local package_name=$(basename "$package_dir")
-            print_color $BLUE "\n├── $package_name"
-            
-            # Show source files
-            if [ -d "$package_dir/src" ]; then
-                print_color $GREEN "│   ├── src"
-                find "$package_dir/src" -type f \( -name "*.tsx" -o -name "*.ts" \) | sed 's|.*/||' | sed 's/^/│   │   ├── /'
+    # Show core
+    if [ -d "backend/core" ]; then
+        print_color $BLUE "├── core"
+        find "backend/core" -type f -name "*.py" | sed 's|.*/||' | sort | sed 's/^/│   ├── /'
+    fi
+    
+    # Show services with more detail
+    if [ -d "backend/services" ]; then
+        print_color $BLUE "├── services"
+        for service_dir in backend/services/*; do
+            if [ -d "$service_dir" ]; then
+                local service_name=$(basename "$service_dir")
+                print_color $GREEN "│   ├── $service_name"
+                
+                # Show service structure
+                # Models
+                if [ -d "$service_dir/models" ]; then
+                    print_color $BLUE "│   │   ├── models"
+                    find "$service_dir/models" -type f -name "*.py" | sed 's|.*/||' | sort | sed 's/^/│   │   │   ├── /'
+                fi
+                
+                # Routes
+                if [ -d "$service_dir/routes" ]; then
+                    print_color $BLUE "│   │   ├── routes"
+                    find "$service_dir/routes" -type f -name "*.py" | sed 's|.*/||' | sort | sed 's/^/│   │   │   ├── /'
+                fi
+                
+                # Utils
+                if [ -d "$service_dir/utils" ]; then
+                    print_color $BLUE "│   │   ├── utils"
+                    find "$service_dir/utils" -type f -name "*.py" | sed 's|.*/||' | sort | sed 's/^/│   │   │   ├── /'
+                fi
+                
+                # Tests
+                if [ -d "$service_dir/tests" ]; then
+                    print_color $BLUE "│   │   ├── tests"
+                    find "$service_dir/tests" -type f -name "test_*.py" | sed 's|.*/||' | sort | sed 's/^/│   │   │   ├── /'
+                fi
+                
+                # Root service files
+                find "$service_dir" -maxdepth 1 -type f -name "*.py" | sed 's|.*/||' | sort | sed 's/^/│   │   ├── /'
             fi
-            
-            # Show config files
-            print_color $GREEN "│   ├── config"
-            find "$package_dir" -maxdepth 1 -type f \( -name "*.json" -o -name "*.js" -o -name "*.ts" \) | sed 's|.*/||' | sed 's/^/│   │   ├── /'
-        fi
-    done
+        done
+    fi
+    
+    # Show config and requirements
+    print_color $BLUE "├── config"
+    echo "│   ├── requirements/"
+    if [ -f "backend/requirements.txt" ]; then
+        echo "│   │   ├── requirements.txt"
+    fi
+    if [ -f "backend/requirements.frozen.txt" ]; then
+        echo "│   │   ├── requirements.frozen.txt"
+    fi
+    if [ -f "backend/requirements.dev.txt" ]; then
+        echo "│   │   ├── requirements.dev.txt"
+    fi
+    
+    # Show environment files
+    print_color $BLUE "├── environment"
+    if [ -f "backend/.env" ]; then
+        echo "│   ├── .env"
+    fi
+    if [ -f "backend/.env.example" ]; then
+        echo "│   ├── .env.example"
+    fi
+    
+    # Show other root files
+    print_color $BLUE "├── root files"
+    find "backend" -maxdepth 1 -type f \( -name "*.py" -o -name "*.md" \) | sed 's|.*/||' | sort | sed 's/^/│   ├── /'
 }
 
 # Main execution
@@ -87,8 +140,8 @@ for app_dir in apps/*; do
     fi
 done
 
-# Show packages
-show_packages
+# Show backend
+show_backend
 
 # Show root config files
 print_color $YELLOW "\n⚙️  Root Config Files"
