@@ -4,15 +4,56 @@
 This monorepo (monolithic repository) contains multiple applications and shared packages managed under a single version control system. Our setup uses pnpm for package management and Turborepo for build system orchestration.
 
 ## Project Structure
+Current monorepo structure:
 
-dhg-monorepo/
-├── apps/ # Application directories
-│ ├── dhg-baseline/ # Base application for patterns
-│ └── dhg-test/ # Test application
-├── packages/ # Shared packages (future use)
-├── docs/ # Documentation
-└── scripts/ # Utility scripts
+```
+📱 apps/
+  📁 dhg-baseline/           # Base application
+    ├── src/                # Frontend source
+    │   ├── pages/         # Page components
+    │   │   └── DashboardPage.tsx
+    │   ├── App.tsx       # Main app with auth routing
+    │   ├── main.tsx      # Entry point
+    │   └── vite-env.d.ts # Vite type definitions
+    └── config files      # App configuration
+        ├── tsconfig.node.json
+        ├── vercel.json
+        ├── tsconfig.app.json
+        ├── package.json
+        ├── tsconfig.json
+        ├── eslint.config.js
+        └── vite.config.ts
 
+  📁 dhg-test/              # Test application
+    ├── src/
+    │   ├── App.tsx
+    │   ├── main.tsx
+    │   └── vite-env.d.ts
+    └── config files
+        └── [same as baseline]
+
+📦 packages/
+  └── auth-service/         # Shared auth package
+      ├── src/
+      │   ├── supabaseClient.ts
+      │   ├── env.d.ts
+      │   ├── LoginPage.tsx
+      │   ├── AuthContext.tsx
+      │   └── index.ts
+      └── config/
+          ├── package.json
+          ├── tsup.config.ts
+          └── tsconfig.json
+
+⚙️ Root Config Files
+  ├── pnpm-lock.yaml      # Lock file for dependencies
+  ├── vercel.json         # Vercel deployment config
+  ├── tsconfig.base.json  # Base TypeScript config
+  ├── turbo.json          # Turborepo config
+  ├── tailwind.config.base.js # Base Tailwind config
+  ├── package.json        # Root package config
+  └── pnpm-workspace.yaml # Workspace definition
+```
 
 ## Key Components
 
@@ -503,3 +544,100 @@ graph TD
    - Review Vercel logs
    - Check build commands
    - Verify environment variables
+
+## File Structure Details
+
+### Frontend Applications (apps/)
+
+#### dhg-baseline/src/
+- **pages/DashboardPage.tsx**: Protected dashboard component, requires authentication
+- **App.tsx**: Main application component with auth routing and protection
+- **main.tsx**: Application entry point, renders App with React 18
+- **vite-env.d.ts**: TypeScript declarations for Vite environment
+
+#### Configuration Files
+- **tsconfig.node.json**: Node-specific TypeScript settings
+- **vercel.json**: Vercel deployment configuration
+- **tsconfig.app.json**: App-specific TypeScript config
+- **package.json**: App dependencies and scripts
+- **tsconfig.json**: TypeScript configuration
+- **eslint.config.js**: ESLint rules and settings
+- **vite.config.ts**: Vite bundler configuration
+
+### Shared Packages (packages/)
+
+#### auth-service/
+- **src/**
+  - **supabaseClient.ts**: Supabase authentication client
+  - **env.d.ts**: Environment variable type definitions
+  - **LoginPage.tsx**: Shared login component
+  - **AuthContext.tsx**: Authentication state management
+  - **index.ts**: Package exports
+- **config/**
+  - **package.json**: Package dependencies and metadata
+  - **tsup.config.ts**: Build configuration for package
+  - **tsconfig.json**: TypeScript settings for package
+
+### Root Configuration Files
+- **pnpm-lock.yaml**: Locked dependency versions
+- **vercel.json**: Root-level Vercel configuration
+- **tsconfig.base.json**: Base TypeScript settings
+- **turbo.json**: Monorepo build pipeline config
+- **tailwind.config.base.js**: Shared Tailwind CSS settings
+- **package.json**: Workspace-level dependencies and scripts
+- **pnpm-workspace.yaml**: Monorepo workspace definition
+
+## Project Architecture
+
+```mermaid
+graph TD
+    subgraph Monorepo
+        Root[Root Config Files]
+        Apps[apps/]
+        Packages[packages/]
+        
+        subgraph Apps
+            Baseline[dhg-baseline]
+            Test[dhg-test]
+            
+            subgraph Baseline
+                BaselineSrc[src/]
+                BaselineConfig[config files]
+                
+                subgraph BaselineSrc
+                    Pages[pages/]
+                    App[App.tsx]
+                    Main[main.tsx]
+                end
+            end
+        end
+        
+        subgraph Packages
+            Auth[auth-service]
+            
+            subgraph Auth
+                AuthSrc[src/]
+                AuthConfig[config/]
+                
+                subgraph AuthSrc
+                    LoginPage[LoginPage.tsx]
+                    AuthContext[AuthContext.tsx]
+                    Client[supabaseClient.ts]
+                end
+            end
+        end
+        
+        Root --> Apps
+        Root --> Packages
+        Auth --> Baseline
+        Auth --> Test
+    end
+```
+
+This diagram shows:
+1. Root configuration files managing the workspace
+2. Apps directory containing our applications
+3. Packages directory with shared auth service
+4. Dependencies between components
+
+[Continue with rest of documentation...]

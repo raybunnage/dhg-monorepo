@@ -1,85 +1,72 @@
 # DHG Baseline Backend Setup Guide
 
-This guide explains the backend setup for the DHG Baseline application, designed for beginners to understand each component.
+This guide explains the backend setup for the DHG Baseline application.
 
-## Directory Structure 
+## Current Directory Structure 
 
+```
 apps/dhg-baseline/backend/
 ├── app/
-│ ├── main.py # Main FastAPI application
-│ ├── core/
-│ │ └── config.py # Configuration management
-├── .env # Environment variables
-├── requirements.txt # Python dependencies
-├── runtime.txt # Python version specification
-└── pyproject.toml # Project metadata and tools config
+│   ├── main.py           # Main FastAPI application
+│   └── core/
+│       ├── __init__.py   # Makes core a package
+│       └── config.py     # Configuration management
+├── pyproject.toml        # Project metadata and dependencies
+└── start-server.sh       # Server startup script
 ```
 
 ## Key Files Explained
 
-### 1. requirements.txt
-This file lists all Python packages needed to run the backend. Here's what each major dependency does:
+### 1. pyproject.toml
+This file manages project metadata and dependencies:
 
-```txt
-# Core Framework
-fastapi==0.109.0          # Main web framework
-uvicorn[standard]==0.27.0 # ASGI server for running the application
-
-# Database & Auth
-supabase==2.0.3          # Supabase client for auth and database
-postgrest==0.13.0        # PostgreSQL REST interface
-python-jose[cryptography] # JWT token handling
-
-# Utilities
-python-dotenv==1.0.0     # Environment variable management
-pydantic==2.5.2          # Data validation
-httpx==0.26.0            # HTTP client
-
-# Additional Dependencies
-websockets               # WebSocket support
-typing-extensions       # Enhanced type hints
-pydantic-settings      # Settings management
+```toml
+[project]
+name = "dhg-baseline-backend"
+version = "1.0.0"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.109.0",
+    "uvicorn[standard]==0.27.0",
+    "python-dotenv==1.0.0",
+    "supabase==2.0.3"
+]
 ```
 
 ### 2. main.py
-The main application file that sets up the FastAPI server:
+The main FastAPI application:
 
 ```python
-# Key components:
-- FastAPI application setup
-- CORS middleware configuration
-- Supabase client initialization
-- API endpoints definition
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from supabase import create_client
+from .core.config import get_settings
+import logging
+
+app = FastAPI(title="DHG Baseline API")
+
+# Health check and environment endpoints
 ```
 
-Important features:
-- Health check endpoint (`/api/health`)
-- Protected routes
-- Error handling
-- Logging configuration
-
-### 3. config.py
-Manages application configuration using environment variables:
+### 3. core/config.py
+Manages application configuration:
 
 ```python
-# Handles:
-- Environment variables loading
-- Application settings
-- Supabase configuration
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    environment: str = "development"
+    debug: bool = True
+    supabase_url: str
+    supabase_key: str
 ```
 
-### 4. .env
-Contains sensitive configuration values:
-```env
-SUPABASE_URL=your_url
-SUPABASE_KEY=your_key
-DEBUG=true
-```
-
-### 5. runtime.txt
-Specifies the Python version:
-```txt
-python-3.11.7
+### 4. start-server.sh
+Server startup script:
+```bash
+#!/bin/bash
+PORT=8000
+uvicorn app.main:app --reload --port $PORT --log-level debug --host 0.0.0.0
 ```
 
 ## Setup Process
