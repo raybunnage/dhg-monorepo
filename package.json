@@ -4,7 +4,7 @@
   "packageManager": "pnpm@9.15.3",
   "scripts": {
     "dev": "turbo run dev",
-    "build": "turbo run build",
+    "build": "pnpm -r build",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "turbo-ignore": "node -e \"process.exit(require('turbo').shouldOptimize(__dirname))\""
