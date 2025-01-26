@@ -1,69 +1,23 @@
 #!/bin/bash
 
-# Log function
+# Function for logging with timestamp
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
 }
 
-# Check if app name is provided
-if [ -z "$1" ]; then
-    log "Error: Please provide an app name"
-    log "Usage: ./start-frontend.sh <app-name>"
+# Default app is dhg-baseline if none specified
+APP_NAME=${1:-"dhg-baseline"}
+
+# Validate app exists
+if [ ! -d "apps/$APP_NAME" ]; then
+    log "Error: App '$APP_NAME' not found in apps directory"
     log "Available apps:"
     ls -1 apps/
     exit 1
 fi
 
-APP_NAME=$1
-APP_PATH="apps/$APP_NAME"
+log "Starting frontend app: $APP_NAME"
 
-# Check if app exists
-if [ ! -d "$APP_PATH" ]; then
-    log "Error: App not found at $APP_PATH"
-    log "Available apps:"
-    ls -1 apps/
-    exit 1
-fi
-
-# Navigate to app directory
-cd "$APP_PATH" || exit 1
-log "Changed to directory: $APP_PATH"
-
-# Check for package.json
-if [ ! -f "package.json" ]; then
-    log "Error: package.json not found in $APP_PATH"
-    exit 1
-fi
-
-# Kill any existing Vite dev servers
-kill_port() {
-    local port=$1
-    local pid=$(lsof -ti :$port)
-    if [ ! -z "$pid" ]; then
-        log "Killing existing process on port $port (PID: $pid)"
-        kill -9 $pid
-    fi
-}
-
-# App-specific Vite ports
-case "$APP_NAME" in
-    "dhg-baseline")
-        kill_port 5177  # dhg-baseline frontend port
-        ;;
-    "dhg-test")
-        kill_port 5178  # dhg-test frontend port
-        ;;
-    *)
-        log "Warning: No specific port defined for $APP_NAME"
-        ;;
-esac
-
-# Install dependencies if node_modules doesn't exist
-if [ ! -d "node_modules" ]; then
-    log "Installing dependencies..."
-    pnpm install
-fi
-
-# Start the development server
-log "Starting frontend development server for $APP_NAME"
+# Change to app directory and start dev server
+cd "apps/$APP_NAME" || exit
 pnpm dev 

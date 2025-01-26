@@ -10,6 +10,8 @@ interface AuthState {
   isLoading: boolean;
 }
 
+const API_URL = 'http://localhost:8000';  // Your backend URL
+
 export const useAuth = () => {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
@@ -28,6 +30,24 @@ export const useAuth = () => {
       console.error('Sign out failed:', error);
       throw error;
     }
+  };
+
+  const signIn = async (email: string, password: string) => {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+      credentials: 'include',
+    });
+    
+    if (!response.ok) {
+      throw new Error('Login failed');
+    }
+    
+    const data = await response.json();
+    return data;
   };
 
   useEffect(() => {
@@ -54,6 +74,7 @@ export const useAuth = () => {
 
   return {
     ...authState,
-    signOut
+    signOut,
+    signIn
   };
 }; 

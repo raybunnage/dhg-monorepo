@@ -5,23 +5,54 @@ import { useAuth } from './hooks/useAuth';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 
+// Protected route wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
-  return user ? <>{children}</> : <Navigate to="/login" />;
+  const { user, isLoading } = useAuth();
+  
+  // Show loading state while checking auth
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+  
+  // Redirect to login if not authenticated
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
 }
 
+// Public route wrapper - redirects to dashboard if already logged in
 function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
-  return !user ? <>{children}</> : <Navigate to="/dashboard" />;
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+  
+  // Redirect to dashboard if already authenticated
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <>{children}</>;
 }
 
 function App() {
   return (
     <AuthProvider>
-      <div className="max-w-7xl mx-auto p-8">
-        <Router>
+      <Router>
+        <div className="min-h-screen bg-gray-50">
           <Routes>
-            {/* Public routes */}
+            {/* Public route - Login page */}
             <Route 
               path="/login" 
               element={
@@ -31,7 +62,7 @@ function App() {
               } 
             />
             
-            {/* Protected routes */}
+            {/* Protected route - Dashboard */}
             <Route 
               path="/dashboard" 
               element={
@@ -41,7 +72,7 @@ function App() {
               } 
             />
             
-            {/* Redirect root to login if not authenticated, dashboard if authenticated */}
+            {/* Root route - Redirect to login or dashboard based on auth state */}
             <Route 
               path="/" 
               element={
@@ -50,9 +81,15 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+
+            {/* Catch all - redirect to root */}
+            <Route 
+              path="*" 
+              element={<Navigate to="/" replace />} 
+            />
           </Routes>
-        </Router>
-      </div>
+        </div>
+      </Router>
     </AuthProvider>
   );
 }
