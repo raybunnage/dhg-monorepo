@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth, LoginPage } from '@dhg/auth-service';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './hooks/useAuth';
+import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {

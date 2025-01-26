@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuth } from '@dhg/auth-service';
+import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
 const DashboardPage = () => {
