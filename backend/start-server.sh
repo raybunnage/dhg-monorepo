@@ -21,6 +21,10 @@ kill_existing() {
 if [ -d ".venv" ]; then
     log "Activating virtual environment"
     source .venv/bin/activate
+    # Ensure dependencies are in sync
+    uv pip sync requirements.frozen.txt
+    # Ensure we're using the venv's Python and uvicorn
+    export PATH="$PWD/.venv/bin:$PATH"
 else
     log "Warning: No virtual environment found at .venv"
 fi
@@ -30,4 +34,4 @@ kill_existing
 
 # Start uvicorn server with new core app structure
 log "Starting unified backend server on port $PORT"
-uvicorn core.app:app --reload --port $PORT --log-level debug --host 0.0.0.0 
+python -m uvicorn core.app:app --reload --port $PORT --log-level debug --host 0.0.0.0 

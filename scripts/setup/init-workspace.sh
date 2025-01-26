@@ -73,11 +73,16 @@ mkdir -p apps/dhg-baseline
 mkdir -p apps/dhg-test
 mkdir -p backend/{core,services,api/v1}
 
-# Shared packages directory
-mkdir -p packages
-
 # Scripts directory
 mkdir -p scripts/{setup,build,deploy,dev,ci,utils}
+
+# Set up backend Python environment
+cd backend
+uv venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+uv pip freeze > requirements.frozen.txt
+cd ..
 
 # Add a comment about structure
 cat > STRUCTURE.md << EOL

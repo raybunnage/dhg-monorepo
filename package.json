@@ -8,6 +8,8 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "backend": "./scripts/start-backend.sh",
+    "backend:sync": "cd backend && uv pip sync requirements.frozen.txt",
+    "setup": "./scripts/setup/init-workspace.sh",
     "turbo-ignore": "node -e \"process.exit(require('turbo').shouldOptimize(__dirname))\""
   },
   "devDependencies": {
