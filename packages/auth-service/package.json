@@ -2,19 +2,12 @@
   "name": "@dhg/auth-service",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
-  "main": "./dist/index.umd.js",
+  "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.umd.js"
-    }
-  },
+  "files": ["dist"],
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "vite build && tsc --emitDeclarationOnly --outDir dist",
     "dev": "vite build --watch"
   },
   "dependencies": {
@@ -29,6 +22,7 @@
     "vite": "^5.0.0"
   },
   "peerDependencies": {
-    "react": "^18.2.0"
+    "react": "^18.2.0",
+    "react-router-dom": "^6.x"
   }
 }
