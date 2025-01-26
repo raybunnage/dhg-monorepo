@@ -491,6 +491,53 @@
             "Use tee for JSON to prevent whitespace issues"
           ]
         }
+      },
+      {
+        "name": "backend-main-location",
+        "description": "Enforce FastAPI main.py location in backend services",
+        "pattern": {
+          "include": ["**/main.py"],
+          "allowedLocations": [
+            "apps/*/backend/app/main.py"
+          ],
+          "disallowedLocations": [
+            "apps/*/backend/main.py",
+            "apps/*/main.py",
+            "apps/*/backend/src/main.py"
+          ]
+        },
+        "message": "main.py files must be located at apps/<service-name>/backend/app/main.py",
+        "severity": "error",
+        "fix": {
+          "type": "move",
+          "target": "apps/{service}/backend/app/main.py"
+        }
+      },
+      {
+        "name": "backend-main-uniqueness",
+        "description": "Ensure only one main.py exists per backend service",
+        "pattern": {
+          "uniquePerService": true,
+          "match": "apps/*/backend/**/main.py",
+          "maxOccurrences": 1
+        },
+        "message": "Each backend service must have exactly one main.py file",
+        "severity": "error"
       }
-    ]
+    ],
+    "fileTypes": {
+      "python": {
+        "extensions": [".py"],
+        "mainFile": "main.py"
+      }
+    },
+    "serviceTypes": {
+      "backend": {
+        "pattern": "apps/*/backend",
+        "requiredFiles": [
+          "app/main.py",
+          "pyproject.toml"
+        ]
+      }
+    }
   }

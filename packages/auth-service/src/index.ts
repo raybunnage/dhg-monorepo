@@ -1,3 +1,7 @@
+// Client-side exports
 export * from './AuthContext'
-export * from './components/LoginForm'
-export * from './supabaseClient' 
+export { LoginPage } from './components/LoginPage'
+export * from './supabaseClient'
+
+// Server-side exports
+export * from './server/auth' 

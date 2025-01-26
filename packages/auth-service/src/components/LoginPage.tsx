@@ -1,23 +1,24 @@
-import React, { useState } from 'react'
-import { useAuth } from '../AuthContext'
+import React, { useState } from 'react';
+import { useAuth } from '../AuthContext';
 
-export function LoginForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const { signIn } = useAuth()
+export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const { signIn } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      await signIn(email, password)
+      await signIn(email, password);
     } catch (err) {
-      setError('Failed to sign in')
+      setError('Failed to sign in');
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <h2>Login Page</h2>
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
         <h2 className="text-center text-3xl font-extrabold text-gray-900">
           Sign in to your account
@@ -67,5 +68,5 @@ export function LoginForm() {
         </form>
       </div>
     </div>
-  )
+  );
 } 

@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from supabase import create_client, Client
-from .core.config import get_settings, Settings
+from supabase import create_client
+from .core.config import get_settings
 import logging
-from typing import Dict, Optional
 import os
+from typing import Dict
+import datetime
 
 # Configure logging
 logging.basicConfig(
@@ -17,80 +18,65 @@ app = FastAPI(title="DHG Baseline API")
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5177"],  # Updated port
+    allow_origins=["http://localhost:5177"],  # Your frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
-
-
-def get_supabase(settings: Settings = Depends(get_settings)) -> Client:
-    return create_client(settings.supabase_url, settings.supabase_key)
 
 
 @app.get("/")
 async def root():
+    """Root endpoint with API information"""
     return {
-        "message": "Welcome to DHG Baseline API",
+        "service": "DHG Baseline API",
+        "version": "1.0.0",  # Should match pyproject.toml
         "docs": "/docs",
         "health": "/api/health",
+        "status": "/api/status",
     }
 
 
-@app.get("/api/health", response_model=Dict[str, bool])
-async def health_check(supabase: Client = Depends(get_supabase)) -> Dict[str, bool]:
-    """
-    Check the health of the API and Supabase connection.
-    Returns:
-        Dict with status indicators for API and Supabase connection
-    """
+@app.get("/api/health")
+async def health_check():
+    """Basic health check endpoint"""
     try:
-        # Test a basic Supabase operation that doesn't require auth
-        response = await supabase.auth.get_url()
-        logger.info(f"Supabase URL response: {response}")
-        logger.info("Health check - Supabase connection successful")
-        return {"api_status": True, "supabase_connected": True}
+        settings = get_settings()
+        supabase = create_client(settings.supabase_url, settings.supabase_key)
+        await supabase.auth.get_url()
+        return {"status": "healthy", "supabase_connected": True}
     except Exception as e:
-        logger.error(
-            f"Health check failed - Supabase error: {type(e).__name__}: {str(e)}"
-        )
-        return {"api_status": True, "supabase_connected": False}
+        logger.error(f"Health check failed: {str(e)}")
+        return {"status": "unhealthy", "supabase_connected": False}
 
 
-@app.get("/api/protected")
-async def protected_route(supabase: Client = Depends(get_supabase)):
-    return {"message": "This is a protected route", "data": "Secret data"}
+@app.get("/api/status")
+async def service_status() -> Dict:
+    """Detailed service status endpoint"""
+    settings = get_settings()
+    return {
+        "service": "dhg-baseline",
+        "status": "operational",
+        "environment": settings.environment,
+        "debug": settings.debug,
+        "version": "1.0.0",  # Should match pyproject.toml
+        "timestamp": datetime.datetime.utcnow().isoformat(),
+    }
 
 
-@app.get("/api/auth/status", response_model=Dict[str, bool | Optional[str]])
-async def auth_status(supabase: Client = Depends(get_supabase)):
-    """
-    Check authentication status and return user info if authenticated.
-    Returns:
-        Dict with auth status and user email if authenticated
-    """
-    try:
-        response = await supabase.auth.get_session()
-        is_authenticated = response.session is not None
-        return {
-            "is_authenticated": is_authenticated,
-            "user_email": response.session.user.email if is_authenticated else None,
-        }
-    except Exception as e:
-        logger.error(f"Auth status check failed: {str(e)}")
-        return {
-            "is_authenticated": False,
-            "user_email": None,
-        }
+@app.get("/api/version")
+async def get_version():
+    """API version information"""
+    return {
+        "version": "1.0.0",  # Should match pyproject.toml
+        "min_client_version": "1.0.0",
+        "build_date": datetime.datetime.utcnow().date().isoformat(),
+    }
 
 
 @app.get("/api/env")
 async def get_environment():
-    """Test endpoint to verify environment configuration"""
-    return {
-        "environment": os.getenv("VITE_APP_ENV", "not_set"),
-        "supabase_url": os.getenv("VITE_SUPABASE_URL", "not_set"),
-        # Don't expose the actual key, just whether it's set
-        "has_supabase_key": bool(os.getenv("VITE_SUPABASE_ANON_KEY")),
-        "debug_mode": os.getenv("DEBUG", "false").lower() == "true",
-    }
+    """Environment configuration endpoint"""
+    settings = get_settings()
+    return {"environment": settings.environment, "debug_mode": settings.debug}

@@ -1,8 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from '@dhg/auth-service';
-import { LoginForm } from '@dhg/auth-service';
-import HomePage from './pages/HomePage';
+import { AuthProvider, useAuth, LoginPage } from '@dhg/auth-service';
 import DashboardPage from './pages/DashboardPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -10,23 +8,49 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return user ? <>{children}</> : <Navigate to="/login" />;
 }
 
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  return !user ? <>{children}</> : <Navigate to="/dashboard" />;
+}
+
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginForm />} />
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            } 
-          />
-        </Routes>
-      </Router>
+      <div className="max-w-7xl mx-auto p-8">
+        <Router>
+          <Routes>
+            {/* Public routes */}
+            <Route 
+              path="/login" 
+              element={
+                <PublicRoute>
+                  <LoginPage />
+                </PublicRoute>
+              } 
+            />
+            
+            {/* Protected routes */}
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Redirect root to login if not authenticated, dashboard if authenticated */}
+            <Route 
+              path="/" 
+              element={
+                <ProtectedRoute>
+                  <Navigate to="/dashboard" replace />
+                </ProtectedRoute>
+              } 
+            />
+          </Routes>
+        </Router>
+      </div>
     </AuthProvider>
   );
 }

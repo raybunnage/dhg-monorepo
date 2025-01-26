@@ -9,12 +9,11 @@ load_dotenv()
 
 class Settings(BaseSettings):
     # Use service role key for backend, not anon key
-    supabase_url: str = os.getenv(
-        "SUPABASE_URL", "https://jdksnfkupzywjdfefkyj.supabase.co"
-    )
+    supabase_url: str = os.getenv("VITE_SUPABASE_URL", "")
     # Anon key for public operations
-    supabase_key: str = os.getenv("SUPABASE_ANON_KEY", "")  # Default to anon key
-    debug: bool = os.getenv("DEBUG", "False").lower() == "true"
+    supabase_key: str = os.getenv("VITE_SUPABASE_ANON_KEY", "")
+    debug: bool = os.getenv("DEBUG", "false").lower() == "true"
+    environment: str = os.getenv("VITE_APP_ENV", "development")
 
     class Config:
         env_file = ".env"
@@ -23,4 +22,8 @@ class Settings(BaseSettings):
 
 @lru_cache()
 def get_settings() -> Settings:
+    """
+    Get cached settings instance.
+    Uses LRU cache to avoid reading env file multiple times.
+    """
     return Settings()
