@@ -1,6 +1,3 @@
-# Version control
-.git
-
 # Dependencies
 node_modules
 __pycache__
@@ -9,31 +6,16 @@ __pycache__
 env/
 venv/
 
-# Build and cache
-.next
-.turbo
-dist
-build/
-.cache
-.pytest_cache/
-
-# Environment (protect sensitive data)
+# Environment
 .env
 .env.*
 !.env.example
 
-# Development files
-*.log
-.coverage
-.tox/
-.hypothesis/
+# Build and cache
+.turbo
+.cache
 
-# OS and editor files
-.DS_Store
-.vscode/
-.idea/
-
-# Exclude everything except backend and apps
-*
-!backend
-!apps
+# Keep essential directories
+!apps/
+!apps/dhg-baseline/**
+!backend/**
