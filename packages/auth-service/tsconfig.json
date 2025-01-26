@@ -2,8 +2,14 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
+    "rootDir": "./src",
     "declaration": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true,
+    "types": ["react", "vite/client"]
   },
-  "include": ["src"]
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 } 

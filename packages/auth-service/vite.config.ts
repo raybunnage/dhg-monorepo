@@ -11,7 +11,14 @@ export default defineConfig({
       fileName: (format) => `index.${format === 'es' ? 'mjs' : 'js'}`
     },
     rollupOptions: {
-      external: ['react', 'react-router-dom', '@supabase/supabase-js']
+      external: ['react', 'react-router-dom', '@supabase/supabase-js'],
+      output: {
+        globals: {
+          react: 'React',
+          'react-router-dom': 'ReactRouterDOM',
+          '@supabase/supabase-js': 'SupabaseJs'
+        }
+      }
     }
   }
 }); 

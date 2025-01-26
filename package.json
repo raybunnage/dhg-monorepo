@@ -4,7 +4,7 @@
   "packageManager": "pnpm@9.15.3",
   "scripts": {
     "dev": "turbo run dev",
-    "build": "pnpm -r build",
+    "build": "pnpm --filter @dhg/auth-service build && pnpm --filter dhg-baseline build",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "turbo-ignore": "node -e \"process.exit(require('turbo').shouldOptimize(__dirname))\""

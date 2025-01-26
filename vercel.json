@@ -1,7 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "buildCommand": "pnpm build",
-  "installCommand": "pnpm install --no-frozen-lockfile",
+  "buildCommand": "cd packages/auth-service && pnpm build && cd ../../apps/dhg-baseline && pnpm build",
+  "outputDirectory": "apps/dhg-baseline/dist",
+  "installCommand": "pnpm install",
   "framework": null
 }
