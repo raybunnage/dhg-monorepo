@@ -1,7 +1,7 @@
 {
   "name": "dhg-baseline",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@dhg/auth-service": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.x.x"
@@ -20,7 +19,7 @@
     "@types/react-dom": "^18.2.0",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.14.0",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^4.2.1",
     "@vitejs/plugin-react-swc": "^3.7.2",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.55.0",

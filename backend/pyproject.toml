@@ -1,5 +1,5 @@
 [project]
-name = "dhg-baseline-backend"
+name = "dhg-backend"
 version = "1.0.0"
 requires-python = ">=3.11"
 dependencies = [
@@ -17,4 +17,4 @@ build-backend = "hatchling.build"
 target-version = "py311"
 
 [project.scripts]
-start = "uvicorn app.main:app --reload" 
+start = "uvicorn core.app:app --reload" 

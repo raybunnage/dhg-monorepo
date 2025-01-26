@@ -1,16 +1,28 @@
 # Dependencies
 node_modules/
 .pnpm-store/
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+env/
+venv/
+ENV/
 
 # Build outputs
 dist/
 build/
 .next/
 out/
+*.so
+pip-log.txt
+pip-delete-this-directory.txt
 
 # Environment
 .env*
 !.env.example
+.python-version
 
 # Vercel
 .vercel/
@@ -18,6 +30,10 @@ out/
 # Cache
 .turbo/
 .cache/
+.pytest_cache/
+.coverage
+.coverage.*
+.hypothesis/
 
 # Logs
 *.log
@@ -31,11 +47,42 @@ pnpm-debug.log*
 .idea/
 *.swp
 *.swo
+*~
+.project
+.pydevproject
+.settings/
 
 # Testing
 coverage/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
 
 # OS specific
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Icon?
 .vercel
+
+# Python distribution/packaging
+.Python
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg

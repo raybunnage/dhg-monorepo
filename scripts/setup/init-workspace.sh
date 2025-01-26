@@ -26,13 +26,33 @@ fi
 
 echo "Initializing monorepo workspace..."
 
-# Initialize the monorepo workspace
-pnpm init
+# Check if package.json exists and backup if it does
+if [ -f "package.json" ]; then
+  echo "Backing up existing package.json..."
+  mv package.json package.json.bak
+fi
 
-# Initialize Vite apps using pnpm
+# Create root package.json with workspaces
+printf '%s\n' '{
+  "name": "dhg-monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "turbo": "latest"
+  }
+}' > package.json
+
+# Initialize frontend Vite apps
 cd apps/dhg-baseline
+rm -rf package.json # Remove if exists
 pnpm create vite . --template react-ts --force
 cd ../dhg-test
+rm -rf package.json # Remove if exists
 pnpm create vite . --template react-ts --force
 cd ../..
 
@@ -51,46 +71,32 @@ cd ../..
 # Create the basic directory structure
 mkdir -p apps/dhg-baseline
 mkdir -p apps/dhg-test
-# Future backend directories (commented out for now)
-# mkdir -p apps/dhg-baseline-api
-# mkdir -p apps/dhg-test-api
+mkdir -p backend/{core,services,api/v1}
 
 # Shared packages directory
 mkdir -p packages
-# Future shared package directories (commented out for now)
-# mkdir -p packages/ui-components
-# mkdir -p packages/api-client
-# mkdir -p packages/db-types
-# mkdir -p packages/shared-utils
 
 # Scripts directory
 mkdir -p scripts/{setup,build,deploy,dev,ci,utils}
 
-# Add a comment about future structure
+# Add a comment about structure
 cat > STRUCTURE.md << EOL
 # DHG Monorepo Structure
 
 ## Current Structure
 - \`apps/dhg-baseline\`: Frontend baseline app (Vite + React)
 - \`apps/dhg-test\`: Frontend test app (Vite + React)
-
-## Future Structure
-### Apps
-- \`apps/dhg-baseline\`: Frontend baseline app (Vite + React)
-- \`apps/dhg-baseline-api\`: Backend baseline API (FastAPI + Python 3.11)
-- \`apps/dhg-test\`: Frontend test app (Vite + React)
-- \`apps/dhg-test-api\`: Backend test API (FastAPI + Python 3.11)
+- \`backend/\`: Unified backend supporting all apps
+  - \`core/\`: Core FastAPI setup
+  - \`services/\`: Individual services (auth, etc.)
+  - \`api/\`: API routes and endpoints
 
 ### Packages
-- \`packages/ui-components\`: Shared React components
-- \`packages/api-client\`: Shared API client utilities
-- \`packages/db-types\`: Shared database types and schemas
-- \`packages/shared-utils\`: Common utilities
+- \`packages/\`: Shared frontend utilities
 
 ### Infrastructure
 - Supabase for database and auth
-- Vercel for frontend deployment
-- TBD for backend deployment
+- Vercel for frontend and backend deployment
 EOL
 
 # Create base configuration files
@@ -98,19 +104,4 @@ cat > pnpm-workspace.yaml << EOL
 packages:
   - 'apps/*'
   - 'packages/*'
-EOL
-
-# Create root package.json with workspaces
-printf '%s\n' '{
-  "name": "dhg-monorepo",
-  "private": true,
-  "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "lint": "turbo run lint",
-    "test": "turbo run test"
-  },
-  "devDependencies": {
-    "turbo": "latest"
-  }
-}' > package.json 
+EOL 

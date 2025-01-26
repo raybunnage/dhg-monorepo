@@ -1,5 +1,34 @@
+# Version control
 .git
+
+# Dependencies
 node_modules
+__pycache__
+*.pyc
+.venv
+env/
+venv/
+
+# Build and cache
 .next
 .turbo
 dist
+build/
+.cache
+.pytest_cache/
+
+# Environment (protect sensitive data)
+.env
+.env.*
+!.env.example
+
+# Development files
+*.log
+.coverage
+.tox/
+.hypothesis/
+
+# OS and editor files
+.DS_Store
+.vscode/
+.idea/

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Port for this backend
+# Port for the unified backend
 PORT=8000
 
 # Log function
@@ -28,6 +28,6 @@ fi
 # Kill any existing process
 kill_existing
 
-# Start uvicorn server
-log "Starting uvicorn server on port $PORT"
-uvicorn app.main:app --reload --port $PORT --log-level debug --host 0.0.0.0 
+# Start uvicorn server with new core app structure
+log "Starting unified backend server on port $PORT"
+uvicorn core.app:app --reload --port $PORT --log-level debug --host 0.0.0.0 

@@ -4,9 +4,10 @@
   "packageManager": "pnpm@9.15.3",
   "scripts": {
     "dev": "turbo run dev",
-    "build": "pnpm --filter @dhg/auth-service build && pnpm --filter dhg-baseline build",
+    "build": "pnpm --filter './apps/*' build",
     "lint": "turbo run lint",
     "test": "turbo run test",
+    "backend": "./scripts/start-backend.sh",
     "turbo-ignore": "node -e \"process.exit(require('turbo').shouldOptimize(__dirname))\""
   },
   "devDependencies": {
