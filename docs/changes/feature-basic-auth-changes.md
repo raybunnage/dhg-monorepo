@@ -43,10 +43,10 @@ Simplified backend:
 ```
 apps/dhg-baseline/backend/
 ├── app/
-│   ├── main.py           # FastAPI app
-│   └── core/
-│       ├── __init__.py
-│       └── config.py     # Settings
+│   ├── api/           # API routes
+│   │   └── auth.py   # Auth endpoints
+│   ├── core/
+│   └── main.py       # FastAPI app
 ├── pyproject.toml        # Dependencies
 └── start-server.sh       # Server script
 ```

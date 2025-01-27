@@ -44,19 +44,18 @@
    ```
    backend/
    ├── app/
-   │   ├── api/           # Route handlers
-   │   ├── core/          # Core configurations
-   │   ├── models/        # Database models
-   │   ├── schemas/       # Pydantic schemas
-   │   ├── services/      # Business logic
-   │   └── main.py        # Single entry point
+   │   ├── api/          # Route handlers
+   │   │   └── auth.py   # Auth endpoints
+   │   ├── core/         # Core configurations
+   │   ├── models/       # Database models
+   │   └── main.py       # Single entry point
    └── pyproject.toml
    ```
 
 2. Routing Rules:
-   - All routes should be organized in the `api` directory
-   - Routes should be grouped by feature
-   - Use versioning (v1, v2) for API endpoints
+   - All routes organized in the `api` directory
+   - Routes grouped by feature (auth.py, users.py, etc.)
+   - Simple, direct endpoint paths (/api/auth/login)
 
 3. Configuration Rules:
    - Environment variables in `.env`

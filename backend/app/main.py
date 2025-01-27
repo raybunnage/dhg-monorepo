@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Response, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-from services.auth.auth_service import AuthService, LoginCredentials
+from .auth import AuthService, LoginCredentials
 
 # Create auth router
 auth_router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -34,6 +34,13 @@ async def get_user():
 # Main app
 app = FastAPI(title="DHG Hub API")
 
+
+# Add root endpoint
+@app.get("/")
+async def root():
+    return {"message": "Backend server is running"}
+
+
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
@@ -47,6 +54,6 @@ app.add_middleware(
 app.include_router(auth_router)
 
 
-@app.get("/health")
+@app.get("/api/health")
 async def health_check():
     return {"status": "healthy"}

@@ -183,3 +183,20 @@ uvicorn app.main:app --reload --port $PORT --log-level debug --host 0.0.0.0
    - Add unit tests
    - Set up integration tests
    - Implement API tests
+
+## Running the Backend
+
+You can start the backend server in two ways:
+
+1. From the monorepo root:
+```bash
+pnpm run backend
+```
+
+2. From any subdirectory using the workspace flag:
+```bash
+pnpm -w run backend
+```
+
+Note: The backend script must be run with access to the workspace root since
+it's defined in the root package.json.

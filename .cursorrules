@@ -493,36 +493,41 @@
         }
       },
       {
-        "name": "backend-main-location",
-        "description": "Enforce FastAPI main.py location in backend services",
+        "name": "backend-structure",
+        "description": "Enforce simple backend structure",
+        "pattern": {
+          "include": ["backend/**/*.py"],
+          "allowedLocations": [
+            "backend/app/main.py",
+            "backend/app/auth.py",
+            "backend/app/health.py",
+            "backend/app/config.py",
+            "backend/app/dependencies.py",
+            "backend/app/__init__.py",
+            "backend/tests/**/*.py"
+          ]
+        },
+        "message": "Backend Python files must follow the simple structure pattern"
+      },
+      {
+        "name": "main-location",
+        "description": "Enforce main.py location",
         "pattern": {
           "include": ["**/main.py"],
           "allowedLocations": [
-            "apps/*/backend/app/main.py"
-          ],
-          "disallowedLocations": [
-            "apps/*/backend/main.py",
-            "apps/*/main.py",
-            "apps/*/backend/src/main.py"
+            "backend/app/main.py"
           ]
         },
-        "message": "main.py files must be located at apps/<service-name>/backend/app/main.py",
-        "severity": "error",
-        "fix": {
-          "type": "move",
-          "target": "apps/{service}/backend/app/main.py"
-        }
+        "message": "main.py must be in backend/app/main.py"
       },
       {
-        "name": "backend-main-uniqueness",
-        "description": "Ensure only one main.py exists per backend service",
+        "name": "route-simplicity",
+        "description": "Keep routes simple initially",
         "pattern": {
-          "uniquePerService": true,
-          "match": "apps/*/backend/**/main.py",
-          "maxOccurrences": 1
+          "maxDepth": 2,
+          "routePattern": "/api/{endpoint}"
         },
-        "message": "Each backend service must have exactly one main.py file",
-        "severity": "error"
+        "message": "Keep routes simple with max one level deep (/api/health not /api/v1/health)"
       }
     ],
     "fileTypes": {
@@ -539,5 +544,17 @@
           "requirements.txt"
         ]
       }
+    },
+    "bestPractices": {
+      "routing": [
+        "Start with flat routes (/api/health)",
+        "Add versioning only when needed",
+        "Group related endpoints in same file"
+      ],
+      "structure": [
+        "Keep all app code in backend/app",
+        "One file per feature (auth.py, health.py)",
+        "Shared config in config.py"
+      ]
     }
   }

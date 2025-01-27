@@ -8,8 +8,9 @@
     "build": "pnpm --filter './apps/*' build",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "backend": "cd backend && source .venv/bin/activate && uvicorn core.app:app --reload --port 8000 --log-level debug --host 0.0.0.0",
-    "backend:sync": "cd backend && source .venv/bin/activate && uv pip sync requirements.frozen.txt",
+    "backend": "./scripts/start-backend-safe.sh",
+    "backend:test": "./scripts/setup-backend-tests.sh",
+    "backend:sync": "cd backend && source .venv/bin/activate && uv pip install -r requirements.txt && uv pip freeze > requirements.frozen.txt",
     "setup": "./scripts/setup/init-workspace.sh",
     "turbo-ignore": "node -e \"process.exit(require('turbo').shouldOptimize(__dirname))\""
   },
