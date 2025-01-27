@@ -533,10 +533,10 @@
     },
     "serviceTypes": {
       "backend": {
-        "pattern": "apps/*/backend",
+        "pattern": "backend",
         "requiredFiles": [
-          "app/main.py",
-          "pyproject.toml"
+          "core/app.py",
+          "requirements.txt"
         ]
       }
     }
