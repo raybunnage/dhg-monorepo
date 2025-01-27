@@ -1,22 +1,34 @@
-import React, { createContext, useContext, ReactNode } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import React, { createContext, useContext, useState } from 'react';
 
-const AuthContext = createContext<ReturnType<typeof useAuth> | null>(null);
+// Define a simple auth state type
+type AuthState = {
+  isLoggedIn: boolean;
+  toggleLogin: () => void;
+};
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const auth = useAuth();
+const AuthContext = createContext<AuthState | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   
+  console.log('Auth State:', { isLoggedIn });
+
+  const toggleLogin = () => {
+    setIsLoggedIn(!isLoggedIn);
+    console.log('Toggling login state');
+  };
+
   return (
-    <AuthContext.Provider value={auth}>
+    <AuthContext.Provider value={{ isLoggedIn, toggleLogin }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuthContext = () => {
+export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuthContext must be used within an AuthProvider');
+    throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
-}; 
+} 

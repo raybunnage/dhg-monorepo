@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { authApi } from '../api/auth';
 
 interface User {
   email?: string;
@@ -10,6 +11,12 @@ interface AuthState {
   isLoading: boolean;
 }
 
+interface LoginResponse {
+  success: boolean;
+  error?: string;
+  debugInfo?: any;
+}
+
 const API_URL = 'http://localhost:8000';  // Your backend URL
 
 export const useAuth = () => {
@@ -17,6 +24,8 @@ export const useAuth = () => {
     user: null,
     isLoading: true
   });
+  const [error, setError] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
 
   const signOut = async () => {
     try {
@@ -32,22 +41,70 @@ export const useAuth = () => {
     }
   };
 
-  const signIn = async (email: string, password: string) => {
-    const response = await fetch(`${API_URL}/api/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-      credentials: 'include',
-    });
+  const signIn = async (email: string, password: string): Promise<LoginResponse> => {
+    setError(null);
+    setDebugInfo(null);
     
-    if (!response.ok) {
-      throw new Error('Login failed');
+    try {
+      // Debug environment
+      console.log('Environment check:', {
+        supabaseUrl: import.meta.env.VITE_SUPABASE_URL ? 'Set' : 'Missing',
+        anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY ? 'Set' : 'Missing'
+      });
+      
+      // Log the attempt
+      console.log('Attempting login for:', email);
+      
+      const response = await authApi.login({ email, password });
+      
+      // Log successful response
+      console.log('Login response:', {
+        success: !!response,
+        user: response?.user ? 'Present' : 'Missing',
+        session: response?.session ? 'Present' : 'Missing'
+      });
+
+      if (response?.user) {
+        setAuthState({
+          user: response.user,
+          isLoading: false
+        });
+        return { success: true };
+      }
+
+      const debugInfo = {
+        timestamp: new Date().toISOString(),
+        responseStatus: response ? 'Received' : 'Empty',
+        userPresent: !!response?.user,
+        email
+      };
+      
+      setDebugInfo(debugInfo);
+      setError('Login failed - no user data received');
+      
+      return {
+        success: false,
+        error: 'Login failed',
+        debugInfo
+      };
+
+    } catch (error) {
+      const errorInfo = {
+        timestamp: new Date().toISOString(),
+        error: error instanceof Error ? error.message : 'Unknown error',
+        email
+      };
+      
+      console.error('Login error:', errorInfo);
+      setError(errorInfo.error);
+      setDebugInfo(errorInfo);
+      
+      return {
+        success: false,
+        error: errorInfo.error,
+        debugInfo: errorInfo
+      };
     }
-    
-    const data = await response.json();
-    return data;
   };
 
   useEffect(() => {
@@ -75,6 +132,9 @@ export const useAuth = () => {
   return {
     ...authState,
     signOut,
-    signIn
+    signIn,
+    error,
+    debugInfo,
+    clearError: () => setError(null)
   };
 }; 
