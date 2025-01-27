@@ -1,21 +1,21 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
+import { jest } from '@jest/globals';
 import { BrowserRouter } from 'react-router-dom';
 import LoginPage from '../pages/LoginPage';
 import { AuthProvider } from '../context/AuthContext';
 import { authApi } from '../api/auth';
 
 // Mock the auth API
-vi.mock('../api/auth', () => ({
+jest.mock('../api/auth', () => ({
   authApi: {
-    login: vi.fn()
+    login: jest.fn()
   }
 }));
 
 // Mock useNavigate
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', async () => {
+  const actual = jest.requireActual('react-router-dom') as typeof import('react-router-dom');
   return {
     ...actual,
     useNavigate: () => mockNavigate
@@ -24,7 +24,7 @@ vi.mock('react-router-dom', async () => {
 
 describe('Authentication Flow', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   test('successful login redirects to dashboard', async () => {
@@ -43,15 +43,19 @@ describe('Authentication Flow', () => {
     );
 
     // Fill in the form
-    fireEvent.change(screen.getByPlaceholderText(/email/i), {
+    const emailInput = screen.getByRole('textbox', { name: /email/i });
+    const passwordInput = screen.getByLabelText(/password/i);
+    const form = screen.getByRole('form');
+
+    fireEvent.change(emailInput, {
       target: { value: 'test@example.com' }
     });
-    fireEvent.change(screen.getByPlaceholderText(/password/i), {
+    fireEvent.change(passwordInput, {
       target: { value: 'password123' }
     });
 
     // Submit the form
-    fireEvent.click(screen.getByText(/sign in/i));
+    fireEvent.submit(form);
 
     // Verify redirect
     await waitFor(() => {

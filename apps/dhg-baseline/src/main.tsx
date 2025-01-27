@@ -4,6 +4,8 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './index.css';
 import LoginPage from './pages/LoginPage';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import DashboardPage from './pages/DashboardPage';
 
 console.log('🚀 Starting application...');
 
@@ -35,13 +37,22 @@ const TestApp = () => (
         <nav style={{ marginBottom: 20 }}>
           <Link to="/" style={{ marginRight: 10 }}>Home</Link>
           <Link to="/login" style={{ marginRight: 10 }}>Login</Link>
-          <Link to="/test">Test Page</Link>
+          <Link to="/dashboard" style={{ marginRight: 10 }}>Dashboard</Link>
+          <Link to="/test">Test</Link>
         </nav>
 
         {/* Routes */}
         <Routes>
           <Route path="/" element={<div>Home Page</div>} />
           <Route path="/login" element={<LoginPage />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            } 
+          />
           <Route path="/test" element={<div>Test Page</div>} />
         </Routes>
 
