@@ -1,0 +1,94 @@
+{
+  "testing": {
+    "stages": {
+      "1_basic_setup": {
+        "description": "Basic Jest setup with minimal configuration",
+        "files": [
+          "jest.config.ts",
+          "src/tests/jest.setup.ts",
+          "src/tests/basic.test.ts"
+        ],
+        "commit_message": "test: Add basic Jest setup\n\n- Add minimal Jest configuration\n- Add Jest setup file\n- Add basic smoke test\n- Verify Jest runs correctly",
+        "verification": "pnpm test src/tests/basic.test.ts"
+      },
+      "2_react_testing": {
+        "description": "Add React Testing Library with simple component",
+        "files": [
+          "src/tests/components/TestButton.tsx",
+          "src/tests/components/TestButton.test.tsx"
+        ],
+        "commit_message": "test: Add React Testing Library setup\n\n- Add simple test component\n- Add component test\n- Verify React component testing works",
+        "verification": "pnpm test src/tests/components/TestButton.test.tsx"
+      },
+      "3_user_events": {
+        "description": "Add user interaction testing",
+        "files": [
+          "src/tests/components/InteractiveButton.tsx",
+          "src/tests/components/InteractiveButton.test.tsx"
+        ],
+        "commit_message": "test: Add user event testing\n\n- Add interactive component\n- Add click handler tests\n- Verify user interactions work",
+        "verification": "pnpm test src/tests/components/InteractiveButton.test.tsx"
+      },
+      "4_context_testing": {
+        "description": "Add context provider testing",
+        "files": [
+          "src/tests/test-utils.tsx",
+          "src/tests/context/TestContext.test.tsx"
+        ],
+        "commit_message": "test: Add context testing setup\n\n- Add test utilities with providers\n- Add context tests\n- Verify context testing works",
+        "verification": "pnpm test src/tests/context/TestContext.test.tsx"
+      },
+      "5_form_testing": {
+        "description": "Add form testing",
+        "files": [
+          "src/tests/components/TestForm.tsx",
+          "src/tests/components/TestForm.test.tsx"
+        ],
+        "commit_message": "test: Add form testing\n\n- Add test form component\n- Add form submission tests\n- Verify form testing works",
+        "verification": "pnpm test src/tests/components/TestForm.test.tsx"
+      }
+    },
+    "rules": {
+      "commit_after_stage": true,
+      "verify_before_commit": true,
+      "test_isolation": true,
+      "error_handling": {
+        "stop_on_failure": true,
+        "require_fixes": true
+      }
+    },
+    "best_practices": {
+      "test_structure": [
+        "Start with minimal configuration",
+        "Add complexity gradually",
+        "Test one feature at a time",
+        "Commit working stages"
+      ],
+      "commit_messages": {
+        "format": "test: {description}\n\n{changes}",
+        "include": [
+          "What was added",
+          "What was verified",
+          "Any key decisions"
+        ]
+      }
+    },
+    "assistant_instructions": {
+      "on_stage_start": [
+        "Explain the stage goal",
+        "List files to be created/modified",
+        "Show expected test output"
+      ],
+      "on_stage_complete": [
+        "Verify all tests pass",
+        "Show git commit command",
+        "Explain next stage"
+      ],
+      "on_error": [
+        "Show specific error",
+        "Suggest focused fix",
+        "Verify fix before continuing"
+      ]
+    }
+  }
+} 

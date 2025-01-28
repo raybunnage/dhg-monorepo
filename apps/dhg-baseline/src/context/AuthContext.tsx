@@ -1,14 +1,15 @@
 import React, { createContext, useContext, useState } from 'react';
 
 // Define a simple auth state type
-type AuthState = {
+interface AuthState {
   isLoggedIn: boolean;
   toggleLogin: () => void;
-};
+  login?: (email: string, password: string) => Promise<boolean>;
+}
 
-const AuthContext = createContext<AuthState | undefined>(undefined);
+export const AuthContext = createContext<AuthState | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
   console.log('Auth State:', { isLoggedIn });
@@ -18,12 +19,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('Toggling login state');
   };
 
+  const login = async (email: string, password: string): Promise<boolean> => {
+    // Simple validation for testing
+    if (email === 'test@example.com' && password === 'validpassword123') {
+      toggleLogin();
+      return true;
+    }
+    return false;
+  };
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, toggleLogin }}>
+    <AuthContext.Provider value={{ isLoggedIn, toggleLogin, login }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
 export function useAuth() {
   const context = useContext(AuthContext);
