@@ -12,7 +12,17 @@ interface AuthProviderProps {
   initialState?: Partial<AuthState>;
 }
 
-export const AuthContext = createContext<AuthState | undefined>(undefined);
+interface AuthContextType {
+  isLoggedIn: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  toggleLogin: () => void;
+}
+
+export const AuthContext = React.createContext<AuthContextType>({
+  isLoggedIn: false,
+  login: async () => {},
+  toggleLogin: () => {}
+});
 
 export const AuthProvider = ({ children, initialState }: AuthProviderProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(initialState?.isLoggedIn ?? false);
