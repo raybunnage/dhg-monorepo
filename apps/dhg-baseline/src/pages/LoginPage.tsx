@@ -31,21 +31,44 @@ const LoginPage = () => {
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-${theme.colors.background.main} ${theme.componentGuidelines.spacing.padding.large}`}>
-      <div className={`${theme.patterns.layout.card} max-w-md w-full space-y-8`}>
-        <h1 className={`text-2xl font-bold mb-4 text-center text-${theme.colors.text.primary}`}>Login</h1>
+    <div className={`
+      min-h-screen flex items-center justify-center 
+      bg-gradient-to-b from-blue-50 to-white
+      px-4 py-12 sm:px-6 lg:px-8
+    `}>
+      <div className={`
+        w-full max-w-md space-y-6
+        bg-white rounded-xl shadow-lg
+        p-8 sm:p-10
+      `}>
+        {/* Status Section */}
+        <div className="flex items-center space-x-2 text-sm mb-6 bg-slate-50 p-3 rounded-lg">
+          <div className="w-2 h-2 rounded-full bg-red-500"></div>
+          <span className="text-slate-700">Status: Not Logged In</span>
+        </div>
+        
+        {/* Title Section */}
+        <div>
+          <h1 className={`
+            text-3xl font-bold text-center text-slate-900
+            tracking-tight
+          `}>Login</h1>
+          <p className="mt-2 text-center text-sm text-slate-600">
+            Please log in to access your account
+          </p>
+        </div>
         
         {error && (
-          <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
+          <div className="p-3 text-sm bg-red-50 border border-red-200 text-red-600 rounded-lg">
             {error}
           </div>
         )}
         
-        <form onSubmit={handleSubmit} className="space-y-4" role="form">
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6" role="form">
           <div>
             <label 
               htmlFor="email" 
-              className={`block text-sm font-medium text-${theme.colors.text.secondary}`}
+              className="block text-sm font-medium text-slate-700 mb-1"
             >
               Email
             </label>
@@ -54,7 +77,17 @@ const LoginPage = () => {
               type="email"
               name="email"
               required
-              className={`mt-1 block w-full ${theme.patterns.inputs.text.base} ${theme.cursor.text}`}
+              className={`
+                block w-full 
+                px-4 py-3
+                border border-slate-200
+                text-slate-900
+                rounded-lg
+                shadow-sm
+                focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                placeholder:text-slate-400
+                transition-colors duration-200
+              `}
               placeholder="you@example.com"
             />
           </div>
@@ -62,7 +95,7 @@ const LoginPage = () => {
           <div>
             <label 
               htmlFor="password" 
-              className={`block text-sm font-medium text-${theme.colors.text.secondary}`}
+              className="block text-sm font-medium text-slate-700 mb-1"
             >
               Password
             </label>
@@ -71,17 +104,49 @@ const LoginPage = () => {
               type="password"
               name="password"
               required
-              className={`mt-1 block w-full ${theme.patterns.inputs.text.base} ${theme.cursor.text}`}
+              className={`
+                block w-full
+                px-4 py-3
+                border border-slate-200
+                text-slate-900
+                rounded-lg
+                shadow-sm
+                focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                placeholder:text-slate-400
+                transition-colors duration-200
+              `}
               placeholder="••••••••"
             />
           </div>
 
           <button
             type="submit"
-            className={`w-full flex justify-center ${theme.patterns.buttons.primary.base} ${theme.patterns.buttons.primary.hover} ${theme.patterns.buttons.primary.focus} ${isLoading ? theme.cursor.loading : theme.cursor.interactive}`}
+            className={`
+              w-full flex justify-center items-center
+              px-4 py-3
+              border border-transparent
+              text-sm font-medium text-white
+              bg-blue-600 hover:bg-blue-700
+              rounded-lg
+              shadow-sm
+              transition-colors duration-200
+              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+              disabled:opacity-50 disabled:cursor-not-allowed
+              ${isLoading ? 'cursor-wait' : 'cursor-pointer'}
+            `}
             disabled={isLoading}
           >
-            {isLoading ? 'Logging in...' : 'Login'}
+            {isLoading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                </svg>
+                Logging in...
+              </>
+            ) : (
+              'Sign in'
+            )}
           </button>
         </form>
       </div>
