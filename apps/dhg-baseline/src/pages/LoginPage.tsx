@@ -5,10 +5,6 @@ import { useAuth } from '../context/AuthContext';
 const LoginPage = () => {
   const { toggleLogin, isLoggedIn } = useAuth();
   const navigate = useNavigate();
-  const [credentials, setCredentials] = React.useState({
-    email: '',
-    password: ''
-  });
   const [error, setError] = React.useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -54,10 +50,6 @@ const LoginPage = () => {
               name="email"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
               placeholder="you@example.com"
-              onChange={(e) => setCredentials(prev => ({
-                ...prev,
-                email: e.target.value
-              }))}
             />
           </div>
           
@@ -74,10 +66,6 @@ const LoginPage = () => {
               name="password"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
               placeholder="••••••••"
-              onChange={(e) => setCredentials(prev => ({
-                ...prev,
-                password: e.target.value
-              }))}
             />
           </div>
 
