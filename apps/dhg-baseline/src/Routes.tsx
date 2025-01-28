@@ -1,12 +1,11 @@
-import React from 'react';
-import { Routes as RouterRoutes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 const Routes = () => {
   return (
-    <RouterRoutes>
+    <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route 
         path="/dashboard" 
@@ -18,7 +17,7 @@ const Routes = () => {
       />
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<div>Page Not Found</div>} />
-    </RouterRoutes>
+    </Routes>
   );
 };
 

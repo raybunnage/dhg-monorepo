@@ -17,7 +17,7 @@ interface LoginResponse {
   debugInfo?: any;
 }
 
-const API_URL = 'http://localhost:8000';  // Your backend URL
+// Remove unused API_URL if not needed
 
 export const useAuth = () => {
   const [authState, setAuthState] = useState<AuthState>({
