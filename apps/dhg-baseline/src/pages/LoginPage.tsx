@@ -1,37 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { authApi } from '../lib/auth-api';
 
-export const LoginPage = () => {
-  const { isLoggedIn, toggleLogin } = useAuth();
+const LoginPage = () => {
+  const { login } = useAuth();
   const navigate = useNavigate();
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.currentTarget as HTMLFormElement;
-    const formData = new FormData(form);
+    const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    if (!email.includes('@')) {
-      setError('Invalid email format');
-      return;
-    }
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters');
-      return;
-    }
-
     try {
-      await authApi.login(email, password);
-      toggleLogin();
-      if (!isLoggedIn) {
+      const success = await login?.(email, password);
+      if (success) {
         navigate('/dashboard');
+      } else {
+        setError('Invalid credentials');
       }
     } catch (err) {
-      setError((err as Error).message);
+      setError('An error occurred during login');
     }
   };
 
@@ -83,7 +73,7 @@ export const LoginPage = () => {
             type="submit"
             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
           >
-            {isLoggedIn ? 'Log Out' : 'Log In'}
+            Log In
           </button>
         </form>
       </div>

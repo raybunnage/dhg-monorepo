@@ -1,5 +1,6 @@
-import { useAuth } from '../context/AuthContext';
+import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isLoggedIn } = useAuth();
@@ -8,7 +9,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (!isLoggedIn) {
     console.log('🚫 Access denied - redirecting to login');
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" />;
   }
 
   return <>{children}</>;

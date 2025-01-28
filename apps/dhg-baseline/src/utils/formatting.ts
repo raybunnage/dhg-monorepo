@@ -1,9 +1,12 @@
 export const formatDate = (date: Date): string => {
-  return new Intl.DateTimeFormat('en-US', {
+  // Force specific timezone for consistent testing
+  const options: Intl.DateTimeFormatOptions = {
     month: 'short',
     day: 'numeric',
-    year: 'numeric'
-  }).format(date);
+    year: 'numeric',
+    timeZone: 'UTC'
+  };
+  return new Intl.DateTimeFormat('en-US', options).format(date);
 };
 
 export const formatCurrency = (amount: number): string => {
@@ -15,5 +18,9 @@ export const formatCurrency = (amount: number): string => {
 
 export const truncateText = (text: string, maxLength: number): string => {
   if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength) + '...';
+  // Find the last complete word that fits
+  const words = text.slice(0, maxLength).split(' ');
+  words.pop(); // Remove last (potentially partial) word
+  const endIndex = words.join(' ').length;
+  return text.slice(0, endIndex) + '...';
 }; 
