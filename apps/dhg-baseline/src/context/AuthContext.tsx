@@ -7,14 +7,22 @@ interface AuthState {
   login?: (email: string, password: string) => Promise<boolean>;
 }
 
+interface AuthProviderProps {
+  children: React.ReactNode;
+  initialState?: Partial<AuthState>;
+}
+
 export const AuthContext = createContext<AuthState | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+export const AuthProvider = ({ children, initialState }: AuthProviderProps) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(initialState?.isLoggedIn ?? false);
   
   console.log('Auth State:', { isLoggedIn });
 
   const toggleLogin = () => {
+    if (initialState?.toggleLogin) {
+      initialState.toggleLogin();
+    }
     setIsLoggedIn(!isLoggedIn);
     console.log('Toggling login state');
   };

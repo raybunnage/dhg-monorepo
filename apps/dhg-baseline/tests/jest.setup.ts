@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
-import { RouterProvider } from 'react-router-dom';
 
 // Silence React Router warnings
 const originalConsoleWarn = console.warn;
@@ -17,3 +16,5 @@ afterEach(() => {
 
 // This will be expanded later
 export {}; 
+
+// Add any global test setup here 

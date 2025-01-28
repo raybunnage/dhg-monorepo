@@ -1,39 +1,69 @@
-import { screen, fireEvent } from '@testing-library/react';
-import { renderWithProviders } from './test-utils';
-import { useAuth } from '../context/AuthContext';
-import { AuthProvider } from '../context/AuthContext';
-
-const TestComponent = () => {
-  const { isLoggedIn, toggleLogin } = useAuth();
-  return (
-    <div>
-      <div data-testid="auth-status">
-        {isLoggedIn ? 'logged-in' : 'logged-out'}
-      </div>
-      <button onClick={toggleLogin} data-testid="auth-toggle">
-        Toggle Auth
-      </button>
-    </div>
-  );
-};
+import { renderHook, act } from '@testing-library/react';
+import { useAuth } from '../src/context/AuthContext';
+import { AuthProvider } from '../src/context/AuthContext';
 
 describe('AuthContext', () => {
-  it('should provide auth state', async () => {
-    await renderWithProviders(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>
-    );
-    expect(screen.getByTestId('auth-status')).toHaveTextContent('logged-out');
+  it('provides initial auth state', async () => {
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: ({ children }) => (
+        <AuthProvider initialState={{ isLoggedIn: false }}>
+          {children}
+        </AuthProvider>
+      ),
+    });
+
+    expect(result.current.isLoggedIn).toBe(false);
   });
 
-  it('should toggle auth state', async () => {
-    await renderWithProviders(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>
-    );
-    fireEvent.click(screen.getByTestId('auth-toggle'));
-    expect(screen.getByTestId('auth-status')).toHaveTextContent('logged-in');
+  it('toggles login state', async () => {
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: ({ children }) => (
+        <AuthProvider initialState={{ isLoggedIn: false }}>
+          {children}
+        </AuthProvider>
+      ),
+    });
+
+    act(() => {
+      result.current.toggleLogin();
+    });
+
+    expect(result.current.isLoggedIn).toBe(true);
+  });
+
+  it('handles login with valid credentials', async () => {
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: ({ children }) => (
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      ),
+    });
+
+    let success;
+    await act(async () => {
+      success = await result.current.login?.('test@example.com', 'validpassword123');
+    });
+
+    expect(success).toBe(true);
+    expect(result.current.isLoggedIn).toBe(true);
+  });
+
+  it('handles login with invalid credentials', async () => {
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: ({ children }) => (
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      ),
+    });
+
+    let success;
+    await act(async () => {
+      success = await result.current.login?.('wrong@email.com', 'wrongpassword');
+    });
+
+    expect(success).toBe(false);
+    expect(result.current.isLoggedIn).toBe(false);
   });
 }); 

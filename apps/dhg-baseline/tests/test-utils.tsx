@@ -1,9 +1,7 @@
 import React from 'react';
 import { render, RenderOptions, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider, AuthContext } from '../context/AuthContext';
-import { act } from '@testing-library/react';
-import { useNavigate } from 'react-router-dom';
+import { AuthProvider } from '../src/context/AuthContext';
 
 // Export mock navigate for tests
 export const mockNavigate = jest.fn();
@@ -18,65 +16,37 @@ jest.mock('react-router-dom', () => ({
   }
 }));
 
-interface ProvidersProps {
-  children: React.ReactElement;
+interface RenderWithProvidersOptions extends Omit<RenderOptions, 'wrapper'> {
   initialEntries?: string[];
   authValue?: {
     isLoggedIn: boolean;
     toggleLogin: () => void;
-    login?: (email: string, password: string) => Promise<boolean>;
   };
 }
-
-const AllTheProviders = ({ 
-  children, 
-  initialEntries = ['/'],
-  authValue = {
-    isLoggedIn: false,
-    toggleLogin: () => {},
-    login: async () => false
-  }
-}: ProvidersProps) => {
-  return (
-    <MemoryRouter initialEntries={initialEntries}>
-      <AuthContext.Provider value={authValue}>
-        <Routes>
-          <Route path="*" element={children} />
-        </Routes>
-      </AuthContext.Provider>
-    </MemoryRouter>
-  );
-};
 
 export const renderWithProviders = async (
   ui: React.ReactElement,
   { 
-    initialEntries,
-    authValue,
+    initialEntries = ['/'],
+    authValue = {
+      isLoggedIn: false,
+      toggleLogin: () => {}
+    },
     ...options 
-  }: { 
-    initialEntries?: string[];
-    authValue?: ProvidersProps['authValue'];
-  } & Omit<RenderOptions, 'wrapper'> = {}
+  }: RenderWithProvidersOptions = {}
 ) => {
-  let result: ReturnType<typeof render>;
-  await act(async () => {
-    result = render(ui, {
-      wrapper: ({ children }) => (
-        <AllTheProviders 
-          initialEntries={initialEntries}
-          authValue={authValue}
-        >
-          {children as React.ReactElement}
-        </AllTheProviders>
-      ),
-      ...options
-    });
-  });
-  return result!;
-};
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <MemoryRouter initialEntries={initialEntries}>
+      <AuthProvider initialState={{ isLoggedIn: authValue.isLoggedIn, toggleLogin: authValue.toggleLogin }}>
+        <Routes>
+          <Route path="*" element={children} />
+        </Routes>
+      </AuthProvider>
+    </MemoryRouter>
+  );
 
-export * from '@testing-library/react';
+  return render(ui, { wrapper: Wrapper, ...options });
+};
 
 // Reset all mocks between tests
 beforeEach(() => {
@@ -95,4 +65,7 @@ export const waitForElement = async (callback: () => void) => {
       return error;
     }
   });
-}; 
+};
+
+// Export testing library utilities
+export * from '@testing-library/react'; 

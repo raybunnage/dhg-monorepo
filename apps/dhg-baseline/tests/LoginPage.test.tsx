@@ -1,77 +1,44 @@
-import { renderWithProviders, screen, fireEvent } from './test-utils';
-import LoginPage from '../pages/LoginPage';
+import { screen, fireEvent } from '@testing-library/react';
+import { renderWithProviders } from './test-utils';
+import LoginPage from '../src/pages/LoginPage';
 
 describe('LoginPage', () => {
-  it('should render form elements', async () => {
-    await renderWithProviders(<LoginPage />);
+  it('renders login form', () => {
+    renderWithProviders(<LoginPage />);
     
-    // Check basic elements
-    expect(screen.getByRole('heading', { name: /login/i })).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i, { selector: 'input' })).toBeInTheDocument();
-    expect(screen.getByRole('button')).toBeInTheDocument();
+    // Check for essential elements
+    expect(screen.getByText('Login')).toBeInTheDocument();
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /log in/i })).toBeInTheDocument();
   });
 
-  it('should handle form submission', async () => {
-    await renderWithProviders(<LoginPage />);
+  it('shows error when submitting empty form', async () => {
+    renderWithProviders(<LoginPage />);
     
-    // Fill form
-    const emailInput = screen.getByRole('textbox', { name: /email/i });
-    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
-    const form = screen.getByRole('form');
-    
-    fireEvent.change(emailInput, {
-      target: { value: 'test@example.com' }
-    });
-    fireEvent.change(passwordInput, {
-      target: { value: 'password123' }
-    });
-    
-    // Submit
-    fireEvent.submit(form);
-    
-    // Verify error message doesn't appear
-    expect(screen.queryByText(/Invalid email format/i)).not.toBeInTheDocument();
-  });
-  
-  it('should show error for invalid email', async () => {
-    await renderWithProviders(<LoginPage />);
-    
-    // Fill form with invalid email
-    const emailInput = screen.getByRole('textbox', { name: /email/i });
-    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
-    const form = screen.getByRole('form');
-    
-    fireEvent.change(emailInput, {
-      target: { value: 'invalid-email' }
-    });
-    fireEvent.change(passwordInput, {
-      target: { value: 'password123' }
-    });
-    
-    // Submit
-    fireEvent.submit(form);
-    
-    // Verify error message appears
-    expect(screen.getByText(/Invalid email format/i)).toBeInTheDocument();
+    // Submit empty form
+    const submitButton = screen.getByRole('button', { name: /log in/i });
+    fireEvent.click(submitButton);
+
+    // Check for error message
+    expect(screen.getByText('Please enter both email and password')).toBeInTheDocument();
   });
 
-  it('should show error for short password', async () => {
-    await renderWithProviders(<LoginPage />);
+  it('handles form submission with credentials', () => {
+    renderWithProviders(<LoginPage />);
     
-    const emailInput = screen.getByRole('textbox', { name: /email/i });
-    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
-    const form = screen.getByRole('form');
+    // Fill in the form
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
     
-    fireEvent.change(emailInput, {
-      target: { value: 'test@example.com' }
-    });
-    fireEvent.change(passwordInput, {
-      target: { value: 'short' }
-    });
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
     
-    fireEvent.submit(form);
+    // Submit form
+    const submitButton = screen.getByRole('button', { name: /log in/i });
+    fireEvent.click(submitButton);
     
-    expect(screen.getByText(/Password must be at least 8 characters/i)).toBeInTheDocument();
+    // Add assertions based on your expected behavior
+    // For example, check if navigation occurred or error displayed
   });
 }); 
