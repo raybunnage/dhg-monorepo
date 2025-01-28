@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
-import AppRoutes from './Routes';
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
 import { AuthProvider } from './context/AuthContext';
 
 const App = () => {
@@ -10,7 +11,9 @@ const App = () => {
     <AuthProvider>
       <Layout>
         <Routes>
-          <Route path="/" element={<AppRoutes />} />
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
         </Routes>
       </Layout>
     </AuthProvider>

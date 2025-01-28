@@ -4,7 +4,6 @@ import React, { useContext, useState } from 'react';
 interface AuthState {
   isLoggedIn: boolean;
   toggleLogin: () => void;
-  login?: (email: string, password: string) => Promise<boolean>;
 }
 
 interface AuthProviderProps {
@@ -12,15 +11,8 @@ interface AuthProviderProps {
   initialState?: Partial<AuthState>;
 }
 
-interface AuthContextType {
-  isLoggedIn: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  toggleLogin: () => void;
-}
-
-export const AuthContext = React.createContext<AuthContextType>({
+export const AuthContext = React.createContext<AuthState>({
   isLoggedIn: false,
-  login: async () => false,
   toggleLogin: () => {}
 });
 
@@ -37,17 +29,8 @@ export const AuthProvider = ({ children, initialState }: AuthProviderProps) => {
     console.log('Toggling login state');
   };
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // Simple validation for testing
-    if (email === 'test@example.com' && password === 'validpassword123') {
-      toggleLogin();
-      return true;
-    }
-    return false;
-  };
-
   return (
-    <AuthContext.Provider value={{ isLoggedIn, toggleLogin, login }}>
+    <AuthContext.Provider value={{ isLoggedIn, toggleLogin }}>
       {children}
     </AuthContext.Provider>
   );
