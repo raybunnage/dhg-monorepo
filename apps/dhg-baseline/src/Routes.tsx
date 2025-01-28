@@ -1,11 +1,12 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes as RouterRoutes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
-const Routes = () => {
+// Rename the component to avoid conflict with the imported Routes
+const AppRoutes = () => {
   return (
-    <Routes>
+    <RouterRoutes>
       <Route path="/login" element={<LoginPage />} />
       <Route 
         path="/dashboard" 
@@ -17,8 +18,8 @@ const Routes = () => {
       />
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<div>Page Not Found</div>} />
-    </Routes>
+    </RouterRoutes>
   );
 };
 
-export default Routes; 
+export default AppRoutes; 
