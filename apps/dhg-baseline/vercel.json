@@ -5,6 +5,15 @@
   "outputDirectory": "dist",
   "installCommand": "pnpm install --no-frozen-lockfile",
   "ignoreCommand": "git diff HEAD^ HEAD --quiet ./",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["src/**"]
+      }
+    }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ],

@@ -22,11 +22,14 @@ vercel --prod
 # Start development server
 vercel dev
 
-# Build locally
+# Build production version locally
 vercel build
 
-# Build and serve locally
-vercel build && vercel start
+# Start development server with hot reload (recommended)
+pnpm dev
+
+# Build and preview production build locally
+pnpm build && pnpm preview
 
 # Build with environment variables
 vercel build --env-file .env.production
@@ -41,8 +44,8 @@ vercel env pull
 # 1. Build with local environment
 vercel build
 
-# 2. Test the build output
-vercel start
+# 2. Preview production build (using Vite's preview server)
+pnpm preview
 
 # 3. Run with specific environment variables
 vercel build --env-file .env.production
@@ -57,6 +60,11 @@ Local builds:
 - Runs build process locally
 - Creates output in `.vercel/output` directory
 - Matches production build process
+
+> Note: While `vercel start` exists, it's recommended to use Vite's built-in
+> development (`pnpm dev`) and preview (`pnpm preview`) commands for local development.
+> These provide better performance, hot module replacement, and more accurate
+> local development experience.
 
 ### Project Setup
 ```bash
