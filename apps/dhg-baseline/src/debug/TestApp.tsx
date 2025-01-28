@@ -1,12 +1,21 @@
-import React from 'react';
-// Only import what we use
-import { BrowserRouter } from 'react-router-dom';
+// Remove unused React import if not using JSX.Element
+import { Routes, Route } from 'react-router-dom';
+import Layout from '../components/Layout';
+import LoginPage from '../pages/LoginPage';
+import DashboardPage from '../pages/DashboardPage';
+import { AuthProvider } from '../context/AuthContext';
 
 const TestApp = () => {
   return (
-    <BrowserRouter>
-      <div>Test App</div>
-    </BrowserRouter>
+    <AuthProvider>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+        </Routes>
+      </Layout>
+    </AuthProvider>
   );
 };
 
