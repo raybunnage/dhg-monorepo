@@ -1,35 +1,40 @@
-import '@testing-library/jest-dom';
+import { expect, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
-import { jest } from '@jest/globals';
+import '@testing-library/jest-dom';
+import * as matchers from '@testing-library/jest-dom/matchers';
 
-// Extend Jest matchers
-declare global {
-  namespace jest {
-    interface Matchers<R> {
-      toBeInTheDocument(): R;
-    }
-  }
-}
+// Extend Vitest's expect with React Testing Library matchers
+expect.extend(matchers as any);
 
-// Mock router
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom') as typeof import('react-router-dom');
-  const mockNavigate = jest.fn();
-  let mockLocation = { pathname: '/' };
+// Global test setup
+beforeAll(() => {
+  // Add any global setup here
+});
 
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-    useLocation: () => mockLocation,
-    Navigate: ({ to }: { to: string }) => {
-      mockLocation = { pathname: to };
-      return null;
-    }
-  };
+// Global cleanup
+afterAll(() => {
+  vi.clearAllMocks();
+  cleanup();
+  vi.resetModules();
 });
 
 // Clean up after each test
 afterEach(() => {
   cleanup();
-  jest.clearAllMocks();
+  vi.clearAllMocks();
+});
+
+// Mock window.matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
 }); 
