@@ -1,19 +1,10 @@
 {
   "framework": "vite",
-  "buildCommand": "pnpm install --no-frozen-lockfile && pnpm build",
+  "buildCommand": "pnpm build",
   "devCommand": "pnpm dev",
   "outputDirectory": "dist",
   "installCommand": "pnpm install --no-frozen-lockfile",
   "ignoreCommand": "git diff HEAD^ HEAD --quiet ./",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["src/**"]
-      }
-    }
-  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ],
