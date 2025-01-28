@@ -1,17 +1,22 @@
 import { createContext, useContext, useState } from 'react';
+import React from 'react';
 
 type TestContextType = {
   value: string;
-  setValue: (value: string) => void;
+  updateValue: (newValue: string) => void;
 };
 
-const TestContext = createContext<TestContextType | undefined>(undefined);
+const TestContext = React.createContext<TestContextType | undefined>(undefined);
 
 export const TestProvider = ({ children }: { children: React.ReactNode }) => {
-  const [value, setValue] = useState('initial');
+  const [value, setValue] = React.useState('initial');
   
+  const updateValue = (newValue: string) => {
+    setValue(newValue);
+  };
+
   return (
-    <TestContext.Provider value={{ value, setValue }}>
+    <TestContext.Provider value={{ value, updateValue }}>
       {children}
     </TestContext.Provider>
   );

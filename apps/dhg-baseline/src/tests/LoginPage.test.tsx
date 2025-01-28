@@ -2,22 +2,22 @@ import { renderWithProviders, screen, fireEvent } from './test-utils';
 import LoginPage from '../pages/LoginPage';
 
 describe('LoginPage', () => {
-  it('should render form elements', () => {
-    renderWithProviders(<LoginPage />);
+  it('should render form elements', async () => {
+    await renderWithProviders(<LoginPage />);
     
     // Check basic elements
     expect(screen.getByRole('heading', { name: /login/i })).toBeInTheDocument();
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i, { selector: 'input' })).toBeInTheDocument();
     expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
   it('should handle form submission', async () => {
-    renderWithProviders(<LoginPage />);
+    await renderWithProviders(<LoginPage />);
     
     // Fill form
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByRole('textbox', { name: /email/i });
+    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
     const form = screen.getByRole('form');
     
     fireEvent.change(emailInput, {
@@ -35,11 +35,11 @@ describe('LoginPage', () => {
   });
   
   it('should show error for invalid email', async () => {
-    renderWithProviders(<LoginPage />);
+    await renderWithProviders(<LoginPage />);
     
     // Fill form with invalid email
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByRole('textbox', { name: /email/i });
+    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
     const form = screen.getByRole('form');
     
     fireEvent.change(emailInput, {
@@ -57,10 +57,10 @@ describe('LoginPage', () => {
   });
 
   it('should show error for short password', async () => {
-    renderWithProviders(<LoginPage />);
+    await renderWithProviders(<LoginPage />);
     
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByRole('textbox', { name: /email/i });
+    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
     const form = screen.getByRole('form');
     
     fireEvent.change(emailInput, {

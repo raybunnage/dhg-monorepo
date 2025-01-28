@@ -2,18 +2,18 @@ import { renderWithProviders, screen, fireEvent } from '../test-utils';
 import { TestProvider, useTestContext } from './TestContext';
 
 const TestComponent = () => {
-  const { value, setValue } = useTestContext();
+  const { value, updateValue } = useTestContext();
   return (
     <div>
       <div data-testid="value">{value}</div>
-      <button onClick={() => setValue('updated')}>Update Value</button>
+      <button onClick={() => updateValue('updated')}>Update</button>
     </div>
   );
 };
 
 describe('TestContext', () => {
-  it('should provide initial value', () => {
-    renderWithProviders(
+  it('should provide initial value', async () => {
+    await renderWithProviders(
       <TestProvider>
         <TestComponent />
       </TestProvider>
@@ -22,8 +22,8 @@ describe('TestContext', () => {
     expect(screen.getByTestId('value')).toHaveTextContent('initial');
   });
 
-  it('should update value when button clicked', () => {
-    renderWithProviders(
+  it('should update value when button clicked', async () => {
+    await renderWithProviders(
       <TestProvider>
         <TestComponent />
       </TestProvider>
@@ -33,13 +33,18 @@ describe('TestContext', () => {
     expect(screen.getByTestId('value')).toHaveTextContent('updated');
   });
 
-  it('should throw error when used outside provider', () => {
-    // Suppress console.error for this test
+  it('should throw error when used outside provider', async () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     
-    expect(() => {
-      renderWithProviders(<TestComponent />);
-    }).toThrow('useTestContext must be used within a TestProvider');
+    try {
+      await renderWithProviders(<TestComponent />);
+      // If we get here, the test should fail
+      expect(true).toBe(false); // Force failure if no error thrown
+    } catch (error) {
+      expect((error as Error).message).toContain(
+        'useTestContext must be used within a TestProvider'
+      );
+    }
     
     consoleSpy.mockRestore();
   });
