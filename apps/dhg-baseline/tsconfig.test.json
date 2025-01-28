@@ -5,7 +5,7 @@
     "esModuleInterop": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "types": ["jest", "@testing-library/jest-dom"]
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/tests/**/*"]
+  "include": ["tests"]
 } 
