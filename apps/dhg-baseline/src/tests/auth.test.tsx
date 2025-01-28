@@ -1,37 +1,24 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { jest } from '@jest/globals';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import LoginPage from '../pages/LoginPage';
 import { AuthProvider } from '../context/AuthContext';
-import { authApi } from '../api/auth';
+import { LoginPage } from '../pages/LoginPage';
+import { authApi } from '../lib/auth-api';
 
-// Mock the auth API
-jest.mock('../api/auth', () => ({
-  authApi: {
-    login: jest.fn()
-  }
-}));
+jest.mock('../lib/auth-api');
 
-// Mock useNavigate
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', async () => {
-  const actual = jest.requireActual('react-router-dom') as typeof import('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate
-  };
+beforeEach(() => {
+  // Clear all mocks before each test
+  jest.clearAllMocks();
+  // Reset window.location
+  window.history.pushState({}, '', '/');
 });
 
 describe('Authentication Flow', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test('successful login redirects to dashboard', async () => {
+  it('successful login redirects to dashboard', async () => {
     // Mock successful login
-    (authApi.login as any).mockResolvedValueOnce({
-      user: { email: 'test@example.com' },
-      session: { access_token: 'fake-token' }
+    (authApi.login as jest.Mock).mockResolvedValueOnce({ 
+      user: { id: 1, email: 'test@example.com' },
+      token: 'fake-token'
     });
 
     render(
@@ -42,30 +29,28 @@ describe('Authentication Flow', () => {
       </BrowserRouter>
     );
 
-    // Fill in the form
-    const emailInput = screen.getByRole('textbox', { name: /email/i });
-    const passwordInput = screen.getByLabelText(/password/i);
-    const form = screen.getByRole('form');
-
-    fireEvent.change(emailInput, {
+    // Fill in login form
+    fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: 'test@example.com' }
     });
-    fireEvent.change(passwordInput, {
+    fireEvent.change(screen.getByLabelText(/password/i), {
       target: { value: 'password123' }
     });
 
-    // Submit the form
-    fireEvent.submit(form);
+    // Submit form
+    await act(async () => {
+      fireEvent.submit(screen.getByRole('form'));
+    });
 
-    // Verify redirect
+    // Wait for redirect
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(window.location.pathname).toBe('/dashboard');
     });
   });
 
-  test('failed login shows error message', async () => {
+  it('failed login shows error message', async () => {
     // Mock failed login
-    (authApi.login as any).mockRejectedValueOnce(new Error('Invalid credentials'));
+    (authApi.login as jest.Mock).mockRejectedValueOnce(new Error('Invalid credentials'));
 
     render(
       <BrowserRouter>
@@ -75,18 +60,61 @@ describe('Authentication Flow', () => {
       </BrowserRouter>
     );
 
-    // Fill and submit form
-    fireEvent.change(screen.getByPlaceholderText(/email/i), {
-      target: { value: 'test@example.com' }
+    // Fill in login form
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: 'bad@email.com' }
     });
-    fireEvent.change(screen.getByPlaceholderText(/password/i), {
-      target: { value: 'wrong-password' }
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: 'wrongpass123' }
     });
-    fireEvent.click(screen.getByText(/sign in/i));
 
-    // Verify error message
-    await waitFor(() => {
-      expect(screen.getByText(/login error/i)).toBeInTheDocument();
+    // Submit form
+    await act(async () => {
+      fireEvent.submit(screen.getByRole('form'));
     });
+
+    // Check for error message
+    await waitFor(() => {
+      screen.debug();
+      expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
+    });
+  });
+
+  it('shows validation errors for invalid input', async () => {
+    render(
+      <BrowserRouter>
+        <AuthProvider>
+          <LoginPage />
+        </AuthProvider>
+      </BrowserRouter>
+    );
+
+    // Test invalid email
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: 'invalidemail' }
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: 'password123' }
+    });
+
+    await act(async () => {
+      fireEvent.submit(screen.getByRole('form'));
+    });
+
+    expect(screen.getByText('Invalid email format')).toBeInTheDocument();
+
+    // Test short password
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: 'valid@email.com' }
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: 'short' }
+    });
+
+    await act(async () => {
+      fireEvent.submit(screen.getByRole('form'));
+    });
+
+    expect(screen.getByText('Password must be at least 8 characters')).toBeInTheDocument();
   });
 }); 

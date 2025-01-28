@@ -1,16 +1,18 @@
-import { screen } from '@testing-library/react';
 import { renderWithProviders } from './test-utils';
 import { ProtectedRoute } from '../components/ProtectedRoute';
-import { mockNavigate } from './test-utils';
+import { waitFor } from '@testing-library/react';
 
 describe('ProtectedRoute', () => {
-  it('should redirect when logged out', () => {
-    renderWithProviders(
+  it('should redirect when logged out', async () => {
+    window.history.pushState({}, '', '/');
+    await renderWithProviders(
       <ProtectedRoute>
         <div>Protected Content</div>
       </ProtectedRoute>
     );
     
-    expect(mockNavigate).toHaveBeenCalledWith('/login');
+    await waitFor(() => {
+      expect(window.location.pathname).toBe('/login');
+    });
   });
 }); 

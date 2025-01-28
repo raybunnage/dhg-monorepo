@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { authApi } from '../lib/auth-api';
 
-const LoginPage = () => {
+export const LoginPage = () => {
   const { isLoggedIn, toggleLogin } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const form = e.currentTarget as HTMLFormElement;
     const formData = new FormData(form);
@@ -22,9 +23,15 @@ const LoginPage = () => {
       setError('Password must be at least 8 characters');
       return;
     }
-    toggleLogin();
-    if (!isLoggedIn) {
-      navigate('/dashboard');
+
+    try {
+      await authApi.login(email, password);
+      toggleLogin();
+      if (!isLoggedIn) {
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      setError((err as Error).message);
     }
   };
 
