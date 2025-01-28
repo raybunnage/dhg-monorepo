@@ -1,23 +1,24 @@
 import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 import { UserList } from './UserList';
 import { testApi } from '../utils/test-api';
+import { vi } from 'vitest';
 
 // Mock the API
-jest.mock('../utils/test-api', () => ({
+vi.mock('../utils/test-api', () => ({
   testApi: {
-    getUsers: jest.fn()
+    getUsers: vi.fn()
   }
 }));
 
 describe('UserList', () => {
   beforeEach(() => {
     // Reset mock before each test
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should show loading state', () => {
     // Setup mock to delay
-    (testApi.getUsers as jest.Mock).mockImplementation(
+    (testApi.getUsers as ReturnType<typeof vi.fn>).mockImplementation(
       () => new Promise(resolve => setTimeout(resolve, 100))
     );
 
@@ -27,7 +28,7 @@ describe('UserList', () => {
 
   it('should render users after loading', async () => {
     // Setup mock to return test data
-    (testApi.getUsers as jest.Mock).mockResolvedValue([
+    (testApi.getUsers as ReturnType<typeof vi.fn>).mockResolvedValue([
       { id: 1, name: 'Test User', email: 'test@example.com' }
     ]);
 
@@ -43,7 +44,7 @@ describe('UserList', () => {
 
   it('should show error message on failure', async () => {
     // Setup mock to reject
-    (testApi.getUsers as jest.Mock).mockRejectedValue(new Error('API Error'));
+    (testApi.getUsers as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('API Error'));
 
     render(<UserList />);
     

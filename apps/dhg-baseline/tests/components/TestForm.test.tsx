@@ -1,8 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { TestForm } from './TestForm';
+import { vi } from 'vitest';
 
 describe('TestForm', () => {
-  const mockSubmit = jest.fn();
+  const mockSubmit = vi.fn();
 
   beforeEach(() => {
     mockSubmit.mockClear();

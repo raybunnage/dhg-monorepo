@@ -3,6 +3,7 @@ import { renderWithProviders } from '../test-utils';
 import DashboardPage from '../../src/pages/DashboardPage';
 import userEvent from '@testing-library/user-event';
 import { act } from '@testing-library/react';
+import { vi } from 'vitest';
 
 describe('DashboardPage', () => {
   it('renders dashboard content', async () => {
@@ -24,7 +25,7 @@ describe('DashboardPage', () => {
 
   it('handles logout', async () => {
     const user = userEvent.setup();
-    const mockToggleLogin = jest.fn();
+    const mockToggleLogin = vi.fn();
     
     renderWithProviders(<DashboardPage />, {
       authValue: {

@@ -2,22 +2,23 @@ import { screen } from '@testing-library/react';
 import { renderWithProviders, mockNavigate } from './test-utils';
 import { ProtectedRoute } from '../src/components/ProtectedRoute';
 import { waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+vi.mock('react-router-dom', () => ({
+  ...vi.importActual('react-router-dom'),
   useNavigate: () => mockNavigate
 }));
 
 describe('ProtectedRoute', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should redirect when logged out', async () => {
     const mockAuthContext = {
       isLoggedIn: false,
-      toggleLogin: jest.fn(),
-      login: jest.fn()
+      toggleLogin: vi.fn(),
+      login: vi.fn()
     };
 
     await renderWithProviders(

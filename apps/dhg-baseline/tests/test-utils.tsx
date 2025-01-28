@@ -2,19 +2,23 @@ import React from 'react';
 import { render, RenderOptions, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '../src/context/AuthContext';
+import { vi } from 'vitest';
 
 // Export mock navigate for tests
-export const mockNavigate = jest.fn();
+export const mockNavigate = vi.fn();
 
-// Mock react-router-dom
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-  Navigate: ({ to }: { to: string }) => {
-    mockNavigate(to);
-    return null;
-  }
-}));
+// Mock setup needs to be before imports
+vi.mock('react-router-dom', async () => {
+  const actual = await import('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+    Navigate: ({ to }: { to: string }) => {
+      mockNavigate(to);
+      return null;
+    }
+  };
+});
 
 interface RenderWithProvidersOptions extends Omit<RenderOptions, 'wrapper'> {
   initialEntries?: string[];
@@ -50,7 +54,7 @@ export const renderWithProviders = async (
 
 // Reset all mocks between tests
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   mockNavigate.mockClear();
 });
 

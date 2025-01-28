@@ -1,9 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { InteractiveButton } from './InteractiveButton';
+import { vi } from 'vitest';
 
 describe('InteractiveButton', () => {
   it('should call onClick when clicked', () => {
-    const handleClick = jest.fn();
+    const handleClick = vi.fn();
     render(<InteractiveButton label="Click me" onClick={handleClick} />);
     
     const button = screen.getByRole('button', { name: /click me/i });

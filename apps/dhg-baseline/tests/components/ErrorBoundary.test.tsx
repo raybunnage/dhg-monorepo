@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import ErrorBoundary from '../../src/components/ErrorBoundary';
+import { vi } from 'vitest';
 
 // Mock component that throws an error
 const ThrowError = () => {
@@ -11,7 +12,7 @@ describe('ErrorBoundary', () => {
   // Prevent console.error from cluttering test output
   const originalError = console.error;
   beforeAll(() => {
-    console.error = jest.fn();
+    console.error = vi.fn();
   });
 
   afterAll(() => {
