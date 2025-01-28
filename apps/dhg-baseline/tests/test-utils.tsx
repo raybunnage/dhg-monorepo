@@ -2,14 +2,14 @@ import React from 'react';
 import { render, RenderOptions, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '../src/context/AuthContext';
-import { vi } from 'vitest';
+import { vi, beforeEach } from 'vitest';
 
 // Export mock navigate for tests
 export const mockNavigate = vi.fn();
 
-// Mock setup needs to be before imports
+// Mock specific functions, not the entire module
 vi.mock('react-router-dom', async () => {
-  const actual = await import('react-router-dom');
+  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
   return {
     ...actual,
     useNavigate: () => mockNavigate,

@@ -11,8 +11,8 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
+    environment: 'jsdom',
     include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     typecheck: {
       enabled: true,
@@ -20,9 +20,19 @@ export default defineConfig({
     },
     pool: 'threads',
     isolate: true,
+    deps: {
+      optimizer: {
+        web: {
+          include: [/vitest/]
+        }
+      }
+    },
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      enabled: true,
+      reporter: ['text', 'html'],
+      reportsDirectory: './coverage',
+      include: ['src/**/*.{ts,tsx}'],
       exclude: [
         'node_modules/',
         'dist/',

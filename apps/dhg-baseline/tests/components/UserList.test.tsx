@@ -1,7 +1,6 @@
 import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 import { UserList } from './UserList';
 import { testApi } from '../utils/test-api';
-import { vi } from 'vitest';
 
 // Mock the API
 vi.mock('../utils/test-api', () => ({

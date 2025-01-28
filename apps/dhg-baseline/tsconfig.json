@@ -24,7 +24,8 @@
 
     "types": [
       "vite/client",
-      "vitest/globals",
+      "vitest",
+      "@vitest/coverage-v8",
       "@testing-library/jest-dom"
     ]
   },
