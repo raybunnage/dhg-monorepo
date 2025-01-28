@@ -151,5 +151,199 @@
       "Include comments in examples to explain key concepts",
       "Examples should be complete and runnable where possible"
     ]
-  }
+  },
+  "rules": [
+    {
+      "name": "git-basics",
+      "description": "Essential Git commands for daily use",
+      "commands": {
+        "status-and-info": [
+          {
+            "command": "git status",
+            "description": "Shows what files are changed, staged, or untracked",
+            "common-use": "Check what files you've modified before committing"
+          },
+          {
+            "command": "git diff",
+            "description": "Shows exact changes in files",
+            "variations": [
+              "git diff file.txt    # Changes in specific file",
+              "git diff --staged    # Changes that are staged"
+            ]
+          }
+        ],
+        "basic-workflow": [
+          {
+            "command": "git add file.txt",
+            "description": "Stage a specific file for commit",
+            "variations": [
+              "git add .            # Stage all changes",
+              "git add *.tsx       # Stage all TypeScript React files",
+              "git add src/        # Stage entire directory"
+            ]
+          },
+          {
+            "command": "git commit -m \"message\"",
+            "description": "Save staged changes with a message",
+            "conventions": {
+              "format": "<type>: <description>",
+              "types": [
+                "feat: new feature",
+                "fix: bug fix",
+                "docs: documentation changes",
+                "test: adding or fixing tests",
+                "refactor: code changes that neither fix bugs nor add features"
+              ]
+            }
+          }
+        ]
+      },
+      "common-patterns": [
+        {
+          "name": "basic-save-work",
+          "steps": [
+            "git status           # Check what's changed",
+            "git diff             # Review changes",
+            "git add .            # Stage changes",
+            "git commit -m \"...\" # Save changes"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "git-branching",
+      "description": "Working with branches",
+      "commands": {
+        "branch-management": [
+          {
+            "command": "git checkout -b feature/new-thing",
+            "description": "Create and switch to new branch",
+            "when-to-use": "Starting work on a new feature"
+          },
+          {
+            "command": "git branch",
+            "description": "List all local branches",
+            "variations": [
+              "git branch -a      # Show all branches including remote",
+              "git branch -d name # Delete a branch"
+            ]
+          },
+          {
+            "command": "git checkout main",
+            "description": "Switch to different branch",
+            "warning": "Commit or stash changes first"
+          }
+        ],
+        "common-patterns": [
+          {
+            "name": "feature-branch-workflow",
+            "steps": [
+              "git checkout main           # Start from main",
+              "git pull                    # Get latest changes",
+              "git checkout -b feature/xyz # Create feature branch",
+              "# Make changes...",
+              "git add .",
+              "git commit -m \"feat: add xyz\"",
+              "git push -u origin feature/xyz"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "git-saving-work",
+      "description": "Commands for saving work in progress",
+      "commands": {
+        "stashing": [
+          {
+            "command": "git stash",
+            "description": "Temporarily save uncommitted changes",
+            "variations": [
+              "git stash push -m \"message\"  # Save with description",
+              "git stash pop                # Apply and remove last stash",
+              "git stash list              # Show all stashes",
+              "git stash apply stash@{0}   # Apply specific stash"
+            ]
+          }
+        ],
+        "common-patterns": [
+          {
+            "name": "quick-branch-switch",
+            "steps": [
+              "git stash                # Save current work",
+              "git checkout other-branch",
+              "# Do something else...",
+              "git checkout previous-branch",
+              "git stash pop            # Restore work"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "git-undoing",
+      "description": "Commands for undoing changes",
+      "commands": {
+        "undo-local": [
+          {
+            "command": "git checkout -- file.txt",
+            "description": "Discard changes in one file",
+            "warning": "Cannot be undone"
+          },
+          {
+            "command": "git reset HEAD file.txt",
+            "description": "Unstage a file",
+            "safe": true
+          },
+          {
+            "command": "git reset --soft HEAD~1",
+            "description": "Undo last commit, keep changes staged",
+            "when-to-use": "Fix commit message or add more files"
+          }
+        ],
+        "common-patterns": [
+          {
+            "name": "fix-last-commit",
+            "steps": [
+              "git reset --soft HEAD~1  # Undo commit",
+              "# Make changes...",
+              "git add .",
+              "git commit -m \"Better message\""
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "git-collaboration",
+      "description": "Working with remote repositories",
+      "commands": {
+        "syncing": [
+          {
+            "command": "git pull",
+            "description": "Get latest changes from remote",
+            "best-practice": "Use before starting new work"
+          },
+          {
+            "command": "git push",
+            "description": "Send commits to remote",
+            "variations": [
+              "git push -u origin branch-name # First push of new branch",
+              "git push                      # Subsequent pushes"
+            ]
+          }
+        ],
+        "common-patterns": [
+          {
+            "name": "daily-start",
+            "steps": [
+              "git checkout main  # Switch to main branch",
+              "git pull          # Get latest changes",
+              "git checkout -b feature/today # New branch for today's work"
+            ]
+          }
+        ]
+      }
+    }
+  ]
 } 
