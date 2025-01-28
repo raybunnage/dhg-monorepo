@@ -1,13 +1,10 @@
-import { expect, afterEach, vi, beforeAll, afterAll } from 'vitest';
+/// <reference types="vitest/globals" />
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import * as matchers from '@testing-library/jest-dom/matchers';
 
 // Extend Vitest's expect with React Testing Library matchers
 expect.extend(matchers as any);
-
-// Make vi available globally
-globalThis.vi = vi;
 
 // Global test setup
 beforeAll(() => {

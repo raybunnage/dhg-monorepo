@@ -26,7 +26,8 @@
       "vite/client",
       "vitest",
       "@vitest/coverage-v8",
-      "@testing-library/jest-dom"
+      "@testing-library/jest-dom",
+      "vitest/globals"
     ]
   },
   "include": ["src", "tests", "vitest.config.ts"],

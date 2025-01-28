@@ -23,7 +23,7 @@ export default defineConfig({
     deps: {
       optimizer: {
         web: {
-          include: [/vitest/]
+          include: ['vitest']
         }
       }
     },

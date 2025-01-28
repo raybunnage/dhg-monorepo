@@ -2,7 +2,7 @@ import React from 'react';
 import { render, RenderOptions, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '../src/context/AuthContext';
-import { vi, beforeEach } from 'vitest';
+/// <reference types="vitest/globals" />
 
 // Export mock navigate for tests
 export const mockNavigate = vi.fn();
