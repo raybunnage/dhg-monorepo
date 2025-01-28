@@ -528,6 +528,143 @@
           "routePattern": "/api/{endpoint}"
         },
         "message": "Keep routes simple with max one level deep (/api/health not /api/v1/health)"
+      },
+      {
+        "type": "ThemeSystem",
+        "description": "Theme and styling configuration for the application",
+        "colorPalette": {
+          "primary": {
+            "main": "blue-600",
+            "light": "blue-400",
+            "dark": "blue-800",
+            "highlight": "blue-300"
+          },
+          "background": {
+            "main": "slate-50",
+            "paper": "white"
+          },
+          "text": {
+            "primary": "slate-900",
+            "secondary": "slate-700"
+          }
+        },
+        "cursorStyles": {
+          "interactive": {
+            "links": "cursor-pointer",
+            "buttons": "cursor-pointer",
+            "disabled": "cursor-not-allowed",
+            "loading": "cursor-wait",
+            "textInput": "cursor-text"
+          }
+        },
+        "componentGuidelines": {
+          "spacing": {
+            "padding": {
+              "small": "p-2",
+              "medium": "p-4",
+              "large": "p-6"
+            },
+            "margin": {
+              "small": "m-2",
+              "medium": "m-4",
+              "large": "m-6"
+            }
+          },
+          "states": {
+            "hover": {
+              "links": "hover:text-blue-700",
+              "buttons": "hover:bg-blue-700"
+            },
+            "focus": {
+              "outline": "focus:ring-2 focus:ring-blue-500",
+              "visible": "focus:outline-none focus:ring-2"
+            },
+            "active": {
+              "buttons": "active:bg-blue-800",
+              "links": "active:text-blue-800"
+            },
+            "disabled": {
+              "opacity": "opacity-50",
+              "cursor": "cursor-not-allowed"
+            }
+          },
+          "accessibility": {
+            "contrast": {
+              "minimum": 4.5,
+              "preferred": 7
+            },
+            "focus": {
+              "visible": true,
+              "style": "ring"
+            },
+            "aria": {
+              "required": true,
+              "landmarks": true
+            }
+          }
+        },
+        "implementation": {
+          "approach": {
+            "incremental": true,
+            "pageByPage": true,
+            "testDriven": true
+          },
+          "workflow": {
+            "steps": [
+              "Document changes",
+              "Create/update tests",
+              "Implement changes",
+              "Review accessibility",
+              "Test responsiveness",
+              "Commit with clear message"
+            ]
+          },
+          "testing": {
+            "types": [
+              "Visual regression",
+              "Accessibility",
+              "Responsive design",
+              "Theme consistency"
+            ],
+            "tools": [
+              "Vitest",
+              "Testing Library",
+              "Axe Core"
+            ]
+          }
+        }
+      },
+      {
+        "type": "StyleGuide",
+        "description": "Consistent styling patterns across components",
+        "patterns": {
+          "buttons": {
+            "primary": {
+              "base": "bg-blue-600 text-white rounded-md px-4 py-2",
+              "hover": "hover:bg-blue-700",
+              "focus": "focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+              "disabled": "opacity-50 cursor-not-allowed"
+            },
+            "secondary": {
+              "base": "bg-white text-blue-600 border border-blue-600 rounded-md px-4 py-2",
+              "hover": "hover:bg-blue-50",
+              "focus": "focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+              "disabled": "opacity-50 cursor-not-allowed"
+            }
+          },
+          "inputs": {
+            "text": {
+              "base": "border border-gray-300 rounded-md px-3 py-2",
+              "focus": "focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+              "error": "border-red-500 focus:ring-red-500 focus:border-red-500"
+            }
+          },
+          "layout": {
+            "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+            "section": "py-12",
+            "card": "bg-white shadow rounded-lg p-6"
+          }
+        }
       }
     ],
     "fileTypes": {
