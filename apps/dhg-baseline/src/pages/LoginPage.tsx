@@ -9,6 +9,7 @@ const LoginPage = () => {
   const handleLogin = () => {
     toggleLogin();
     if (!isLoggedIn) {
+      console.log('Login successful, navigating to dashboard...');
       navigate('/dashboard');
     }
   };
