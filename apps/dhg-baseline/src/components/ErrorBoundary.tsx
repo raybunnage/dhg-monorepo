@@ -2,18 +2,18 @@ import React, { Component, ErrorInfo } from 'react';
 
 interface Props {
   children: React.ReactNode;
-  onReset?: () => void;
+  fallback?: React.ReactNode;
 }
 
 interface State {
   hasError: boolean;
-  error?: Error;
+  error: Error | null;
 }
 
 class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: null };
   }
 
   static getDerivedStateFromError(error: Error): State {
@@ -21,25 +21,15 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
   }
-
-  handleReset = () => {
-    this.setState({ hasError: false, error: undefined });
-    this.props.onReset?.();
-  };
 
   render() {
     if (this.state.hasError) {
-      return (
-        <div className="p-4 text-center">
-          <h2 className="text-xl font-bold mb-4">Something went wrong</h2>
-          <button
-            onClick={this.handleReset}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Try Again
-          </button>
+      return this.props.fallback || (
+        <div className="p-4 bg-red-50 border border-red-200 rounded">
+          <h2 className="text-red-800 font-semibold">Something went wrong</h2>
+          <p className="text-red-600 mt-1">{this.state.error?.message}</p>
         </div>
       );
     }

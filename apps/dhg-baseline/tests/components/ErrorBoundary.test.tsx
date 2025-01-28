@@ -1,41 +1,50 @@
-import { screen } from '@testing-library/react';
-import { renderWithProviders } from '../test-utils';
-import ErrorBoundary from '../../components/ErrorBoundary';
+import { render, screen } from '@testing-library/react';
+import ErrorBoundary from '../../src/components/ErrorBoundary';
 
+// Mock component that throws an error
 const ThrowError = () => {
   throw new Error('Test error');
+  return null;
 };
 
 describe('ErrorBoundary', () => {
-  beforeEach(() => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+  // Prevent console.error from cluttering test output
+  const originalError = console.error;
+  beforeAll(() => {
+    console.error = jest.fn();
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
+  afterAll(() => {
+    console.error = originalError;
   });
 
-  it('should catch errors and display fallback UI', async () => {
-    await renderWithProviders(
+  it('renders children when no error occurs', () => {
+    render(
+      <ErrorBoundary>
+        <div>Test Content</div>
+      </ErrorBoundary>
+    );
+
+    expect(screen.getByText('Test Content')).toBeInTheDocument();
+  });
+
+  it('renders fallback UI when error occurs', () => {
+    render(
       <ErrorBoundary>
         <ThrowError />
       </ErrorBoundary>
     );
-    
+
     expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
   });
 
-  it('should allow recovery via retry button', async () => {
-    const onReset = jest.fn();
-    
-    await renderWithProviders(
-      <ErrorBoundary onReset={onReset}>
+  it('renders custom fallback when provided', () => {
+    render(
+      <ErrorBoundary fallback={<div>Custom Error UI</div>}>
         <ThrowError />
       </ErrorBoundary>
     );
-    
-    screen.getByRole('button', { name: /try again/i }).click();
-    expect(onReset).toHaveBeenCalled();
+
+    expect(screen.getByText('Custom Error UI')).toBeInTheDocument();
   });
 }); 

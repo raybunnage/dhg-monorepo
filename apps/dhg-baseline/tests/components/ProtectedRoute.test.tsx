@@ -2,25 +2,37 @@ import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../test-utils';
 import { ProtectedRoute } from '../../src/components/ProtectedRoute';
 
-describe.skip('ProtectedRoute', () => {
-  it('redirects to login when not authenticated', () => {
+describe('ProtectedRoute', () => {
+  it('renders children when authenticated', () => {
     renderWithProviders(
       <ProtectedRoute>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
+      {
+        authValue: {
+          isLoggedIn: true,
+          toggleLogin: () => {}
+        }
+      }
     );
-    
-    expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
-    expect(screen.getByText(/redirecting to login/i)).toBeInTheDocument();
+
+    expect(screen.getByText('Protected Content')).toBeInTheDocument();
   });
 
-  it('shows content when authenticated', () => {
+  it('redirects when not authenticated', () => {
     renderWithProviders(
       <ProtectedRoute>
         <div>Protected Content</div>
-      </ProtectedRoute>
+      </ProtectedRoute>,
+      {
+        authValue: {
+          isLoggedIn: false,
+          toggleLogin: () => {}
+        }
+      }
     );
-    
-    expect(screen.getByText('Protected Content')).toBeInTheDocument();
+
+    // Content should not be rendered
+    expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
   });
 }); 

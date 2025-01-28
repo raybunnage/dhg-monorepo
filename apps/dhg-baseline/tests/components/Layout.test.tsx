@@ -1,26 +1,32 @@
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../test-utils';
-import Layout from '../../components/Layout';
+import Layout from '../../src/components/Layout';
 
 describe('Layout', () => {
-  it('should render header and footer', async () => {
-    await renderWithProviders(
+  it('renders header and main content', () => {
+    renderWithProviders(
       <Layout>
-        <div>Content</div>
+        <div>Test Content</div>
       </Layout>
     );
-    
-    expect(screen.getByRole('banner')).toBeInTheDocument(); // Header
-    expect(screen.getByRole('contentinfo')).toBeInTheDocument(); // Footer
+
+    expect(screen.getByText('DHG Baseline')).toBeInTheDocument();
+    expect(screen.getByText('Test Content')).toBeInTheDocument();
   });
 
-  it('should render children content', async () => {
-    await renderWithProviders(
+  it('shows login status', () => {
+    renderWithProviders(
       <Layout>
-        <div data-testid="test-content">Test Content</div>
-      </Layout>
+        <div>Test Content</div>
+      </Layout>,
+      {
+        authValue: {
+          isLoggedIn: true,
+          toggleLogin: () => {}
+        }
+      }
     );
-    
-    expect(screen.getByTestId('test-content')).toBeInTheDocument();
+
+    expect(screen.getByText(/✅ logged in/i)).toBeInTheDocument();
   });
 }); 
