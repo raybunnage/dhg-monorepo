@@ -3,8 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
-  const { login } = useAuth();
+  const { toggleLogin, isLoggedIn } = useAuth();
   const navigate = useNavigate();
+  const [credentials, setCredentials] = React.useState({
+    email: '',
+    password: ''
+  });
   const [error, setError] = React.useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -13,15 +17,15 @@ const LoginPage = () => {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    try {
-      const success = await login?.(email, password);
-      if (success) {
+    // Use same validation as TestApp
+    if (email && password) {
+      console.log('Login attempt:', { email, password: '***' });
+      toggleLogin();
+      if (!isLoggedIn) {
         navigate('/dashboard');
-      } else {
-        setError('Invalid credentials');
       }
-    } catch (err) {
-      setError('An error occurred during login');
+    } else {
+      setError('Please enter both email and password');
     }
   };
 
@@ -50,6 +54,10 @@ const LoginPage = () => {
               name="email"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
               placeholder="you@example.com"
+              onChange={(e) => setCredentials(prev => ({
+                ...prev,
+                email: e.target.value
+              }))}
             />
           </div>
           
@@ -66,6 +74,10 @@ const LoginPage = () => {
               name="password"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
               placeholder="••••••••"
+              onChange={(e) => setCredentials(prev => ({
+                ...prev,
+                password: e.target.value
+              }))}
             />
           </div>
 
