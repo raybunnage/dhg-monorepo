@@ -1,10 +1,10 @@
-import React from 'react';
 import { Routes as RouterRoutes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
-const Routes = () => {
+// Rename the component to avoid conflict with the imported Routes
+const AppRoutes = () => {
   return (
     <RouterRoutes>
       <Route path="/login" element={<LoginPage />} />
@@ -22,4 +22,4 @@ const Routes = () => {
   );
 };
 
-export default Routes; 
+export default AppRoutes; 
