@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,23 +9,32 @@ const LoginPage = () => {
     email: '',
     password: ''
   });
-  const [error, setError] = React.useState<string | null>(null);
+  const [error, setError] = useState<string>('');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(''); // Clear previous errors
+    
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
-
-    // Use same validation as TestApp
-    if (email && password) {
-      console.log('Login attempt:', { email, password: '***' });
-      toggleLogin();
-      if (!isLoggedIn) {
-        navigate('/dashboard');
-      }
-    } else {
-      setError('Please enter both email and password');
+    
+    // Validate email
+    if (!email.includes('@')) {
+      setError('Invalid email format');
+      return;
+    }
+    
+    // Validate password
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+    
+    console.log('Login attempt:', { email, password: '***' });
+    toggleLogin();
+    if (!isLoggedIn) {
+      navigate('/dashboard');
     }
   };
 
