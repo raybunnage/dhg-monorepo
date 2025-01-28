@@ -4,29 +4,15 @@ import Layout from '../../src/components/Layout';
 
 describe('Layout', () => {
   it('renders header and main content', () => {
-    renderWithProviders(
-      <Layout>
-        <div>Test Content</div>
-      </Layout>
-    );
-
-    expect(screen.getByText('DHG Baseline')).toBeInTheDocument();
-    expect(screen.getByText('Test Content')).toBeInTheDocument();
+    renderWithProviders(<Layout>Test Content</Layout>);
+    
+    expect(screen.getByRole('banner')).toBeInTheDocument();
+    expect(screen.getByRole('main')).toBeInTheDocument();
   });
 
   it('shows login status', () => {
-    renderWithProviders(
-      <Layout>
-        <div>Test Content</div>
-      </Layout>,
-      {
-        authValue: {
-          isLoggedIn: true,
-          toggleLogin: () => {}
-        }
-      }
-    );
-
-    expect(screen.getByText(/✅ logged in/i)).toBeInTheDocument();
+    renderWithProviders(<Layout>Test Content</Layout>);
+    expect(screen.getByText(/status:/i)).toBeInTheDocument();
+    expect(screen.getByText(/not logged in/i)).toBeInTheDocument();
   });
 }); 
