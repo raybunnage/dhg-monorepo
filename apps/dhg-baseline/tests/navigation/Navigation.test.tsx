@@ -5,6 +5,6 @@ import App from '../../src/App';
 describe('Navigation', () => {
   it('renders main navigation', () => {
     renderWithProviders(<App />);
-    expect(screen.getByRole('navigation')).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: /main navigation/i })).toBeInTheDocument();
   });
 }); 

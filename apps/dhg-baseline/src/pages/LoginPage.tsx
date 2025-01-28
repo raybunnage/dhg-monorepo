@@ -18,9 +18,13 @@ const LoginPage = () => {
   return (
     <div>
       <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <input type="email" name="email" required />
-        <input type="password" name="password" required />
+      <form onSubmit={handleSubmit} role="form">
+        <label htmlFor="email">Email</label>
+        <input id="email" type="email" name="email" required />
+        
+        <label htmlFor="password">Password</label>
+        <input id="password" type="password" name="password" required />
+        
         <button type="submit">Login</button>
       </form>
     </div>

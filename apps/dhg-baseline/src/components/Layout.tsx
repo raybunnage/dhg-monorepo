@@ -18,6 +18,15 @@ const Layout = ({ children }: LayoutProps) => {
           </div>
         </div>
       </header>
+      <nav role="navigation" aria-label="main navigation">
+        <div>
+          {isLoggedIn ? (
+            <span>Welcome back!</span>
+          ) : (
+            <span>Please log in</span>
+          )}
+        </div>
+      </nav>
       <main className="max-w-7xl mx-auto py-6 px-4">
         {children}
       </main>

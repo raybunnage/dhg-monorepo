@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 // Define a simple auth state type
 interface AuthState {
@@ -14,13 +14,13 @@ interface AuthProviderProps {
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<boolean>;
   toggleLogin: () => void;
 }
 
 export const AuthContext = React.createContext<AuthContextType>({
   isLoggedIn: false,
-  login: async () => {},
+  login: async () => false,
   toggleLogin: () => {}
 });
 
