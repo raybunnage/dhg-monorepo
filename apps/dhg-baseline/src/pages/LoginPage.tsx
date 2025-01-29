@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { theme } from '../theme';
 
 const LoginPage = () => {
   const { toggleLogin, isLoggedIn } = useAuth();
@@ -37,12 +36,16 @@ const LoginPage = () => {
       p-4
     `}>
       {/* Status Section */}
-      <div className="mb-2">
+      <div className="mb-2 bg-[#cce3ff] p-2">
         <div className="text-xl">Status: ❌ Not Logged In</div>
         <div className="text-xl">Please log in</div>
       </div>
       
-      <div className="text-4xl font-bold mb-8 bg-[#b3d9ff] inline-block px-4">
+      <div className={`
+        text-4xl font-bold mb-8 
+        bg-[#b3d9ff]
+        inline-block px-4
+      `}>
         Login
       </div>
       
@@ -99,7 +102,8 @@ const LoginPage = () => {
             px-8 py-1
             border border-black
             text-sm font-medium text-black
-            bg-[#e6e6e6] hover:bg-[#cccccc]
+            bg-[#cce3ff]
+            hover:bg-[#b3d9ff]
             disabled:opacity-50 disabled:cursor-not-allowed
             ${isLoading ? 'cursor-wait' : 'cursor-pointer'}
           `}

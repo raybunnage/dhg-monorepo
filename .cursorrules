@@ -693,5 +693,54 @@
         "One file per feature (auth.py, health.py)",
         "Shared config in config.py"
       ]
+    },
+    "packageManagement": {
+      "type": "monorepo",
+      "packageManager": "pnpm",
+      "rules": [
+        {
+          "name": "package-installation",
+          "description": "Rules for installing packages in monorepo",
+          "pattern": {
+            "command": "pnpm add",
+            "requireFilter": true,
+            "filterFormat": "--filter {app-name}"
+          },
+          "examples": [
+            {
+              "correct": "pnpm add -D package-name --filter app-name",
+              "incorrect": "pnpm add -D package-name",
+              "explanation": "Must specify app with --filter flag in monorepo"
+            }
+          ],
+          "bestPractices": [
+            "Always use --filter flag to target specific app",
+            "Avoid installing at root unless explicitly needed",
+            "Use -w or --workspace-root flag for intentional root installation"
+          ]
+        },
+        {
+          "name": "dev-dependencies",
+          "description": "Installing development dependencies",
+          "commonPatterns": {
+            "tailwind": "pnpm add -D tailwindcss postcss autoprefixer --filter {app-name}",
+            "testing": "pnpm add -D vitest @testing-library/react --filter {app-name}",
+            "typescript": "pnpm add -D typescript @types/react --filter {app-name}"
+          }
+        },
+        {
+          "name": "workspace-management",
+          "description": "Managing workspace-level operations",
+          "commands": {
+            "rootInstall": "pnpm add -Dw package-name",
+            "filterInstall": "pnpm add -D package-name --filter app-name",
+            "multipleApps": "pnpm add -D package-name --filter app1 --filter app2"
+          }
+        }
+      ],
+      "errorMessages": {
+        "missingFilter": "ERR_PNPM_ADDING_TO_ROOT: Add --filter app-name to install to specific app",
+        "rootWarning": "Running this command will add the dependency to the workspace root"
+      }
     }
   }

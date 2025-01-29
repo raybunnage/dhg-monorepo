@@ -1,7 +1,8 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -30,7 +31,13 @@ module.exports = {
           700: '#374151',
           800: '#1F2937',
           900: '#111827',
-        }
+        },
+        login: {
+          bg: '#b3d9ff',
+          secondary: '#cce3ff',
+          'button-bg': '#e6e6e6',
+          'button-hover': '#cccccc',
+        },
       },
       fontFamily: {
         sans: ['Inter var', 'system-ui', '-apple-system', 'sans-serif'],
@@ -44,7 +51,5 @@ module.exports = {
       }
     },
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
+  plugins: [],
 } 

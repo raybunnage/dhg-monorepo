@@ -2,6 +2,19 @@
 
 This directory contains debugging tools for testing authentication and routing functionality.
 
+## TestColorApp
+
+The TestColorApp provides a reference implementation for the login theme colors:
+- Shows the exact color palette used
+- Demonstrates proper theme implementation
+- Can be used to test color changes
+
+To use TestColorApp for testing:
+1. In main.tsx, import TestColorApp
+2. Replace <App /> with <TestColorApp />
+3. Test color changes
+4. Switch back to <App /> when done
+
 ## TestApp
 
 The TestApp provides a simplified interface for testing:
