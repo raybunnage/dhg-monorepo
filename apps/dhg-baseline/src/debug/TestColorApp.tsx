@@ -1,14 +1,4 @@
-import React from 'react';
-
 const TestColorApp = () => {
-  // Color palette based on the login page
-  const colors = {
-    primary: '#b3d9ff',    // Light blue background
-    secondary: '#cce3ff',  // Slightly darker blue
-    white: '#ffffff',
-    black: '#000000',
-  };
-
   return (
     <div className="min-h-screen bg-[#b3d9ff] p-4">
       <div className="space-y-6">

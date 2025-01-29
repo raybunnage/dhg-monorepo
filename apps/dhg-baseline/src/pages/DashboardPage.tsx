@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { HiUsers, HiDocumentText, HiChartBar, HiClock } from 'react-icons/hi';
 
 const DashboardPage = () => {
-  const { toggleLogin } = useAuth();
+  const { toggleLogin, isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   // Ocean Blue theme colors
@@ -63,18 +63,23 @@ const DashboardPage = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 border border-black text-sm font-medium"
-          style={{ 
-            backgroundColor: theme.buttonBg,
-            transition: 'background-color 0.2s'
-          }}
-          onMouseOver={e => e.currentTarget.style.backgroundColor = theme.buttonHover}
-          onMouseOut={e => e.currentTarget.style.backgroundColor = theme.buttonBg}
-        >
-          Logout
-        </button>
+        <div className="flex items-center gap-4">
+          <span className="text-gray-600">
+            {isLoggedIn ? '✅ Logged In' : '❌ Not Logged In'}
+          </span>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 border border-black text-sm font-medium"
+            style={{ 
+              backgroundColor: theme.buttonBg,
+              transition: 'background-color 0.2s'
+            }}
+            onMouseOver={e => e.currentTarget.style.backgroundColor = theme.buttonHover}
+            onMouseOut={e => e.currentTarget.style.backgroundColor = theme.buttonBg}
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Stats Grid */}

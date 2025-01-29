@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
-  const { toggleLogin, isLoggedIn } = useAuth();
+  const { toggleLogin } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -39,10 +39,10 @@ const LoginPage = () => {
     <div className="min-h-screen flex flex-col items-start justify-start p-4"
       style={{ backgroundColor: theme.background }}>
       
-      <div className="text-4xl font-bold mb-8 px-4"
+      <h1 className="text-4xl font-bold mb-8 px-4"
         style={{ backgroundColor: theme.background }}>
         Login
-      </div>
+      </h1>
       
       {error && (
         <div className="mb-4 text-red-600">
@@ -56,6 +56,7 @@ const LoginPage = () => {
             Email
           </label>
           <input
+            id="email"
             type="email"
             name="email"
             required
@@ -69,6 +70,7 @@ const LoginPage = () => {
             Password
           </label>
           <input
+            id="password"
             type="password"
             name="password"
             required
