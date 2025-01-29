@@ -8,6 +8,14 @@ const LoginPage = () => {
   const [error, setError] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
+  // Ocean Blue theme colors
+  const theme = {
+    background: '#b3e0ff',
+    secondary: '#99d6ff',
+    buttonBg: '#99d6ff',
+    buttonHover: '#80ccff',
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(''); // Clear previous errors
@@ -20,9 +28,7 @@ const LoginPage = () => {
     if (email && password) {
       console.log('Login attempt:', { email, password: '***' });
       toggleLogin();
-      if (!isLoggedIn) {
-        navigate('/dashboard');
-      }
+      navigate('/dashboard');
     } else {
       setError('Please enter both email and password');
     }
@@ -30,22 +36,11 @@ const LoginPage = () => {
   };
 
   return (
-    <div className={`
-      min-h-screen flex flex-col items-start justify-start 
-      bg-[#b3d9ff]
-      p-4
-    `}>
-      {/* Status Section */}
-      <div className="mb-2 bg-[#cce3ff] p-2">
-        <div className="text-xl">Status: ❌ Not Logged In</div>
-        <div className="text-xl">Please log in</div>
-      </div>
+    <div className="min-h-screen flex flex-col items-start justify-start p-4"
+      style={{ backgroundColor: theme.background }}>
       
-      <div className={`
-        text-4xl font-bold mb-8 
-        bg-[#b3d9ff]
-        inline-block px-4
-      `}>
+      <div className="text-4xl font-bold mb-8 px-4"
+        style={{ backgroundColor: theme.background }}>
         Login
       </div>
       
@@ -61,17 +56,10 @@ const LoginPage = () => {
             Email
           </label>
           <input
-            id="email"
             type="email"
             name="email"
             required
-            className={`
-              w-full
-              px-2 py-1
-              border border-black
-              text-slate-900
-              bg-white
-            `}
+            className="w-full px-2 py-1 border border-black bg-white"
             placeholder="you@example.com"
           />
         </div>
@@ -81,32 +69,23 @@ const LoginPage = () => {
             Password
           </label>
           <input
-            id="password"
             type="password"
             name="password"
             required
-            className={`
-              w-full
-              px-2 py-1
-              border border-black
-              text-slate-900
-              bg-white
-            `}
+            className="w-full px-2 py-1 border border-black bg-white"
             placeholder="••••••••"
           />
         </div>
 
         <button
           type="submit"
-          className={`
-            px-8 py-1
-            border border-black
-            text-sm font-medium text-black
-            bg-[#cce3ff]
-            hover:bg-[#b3d9ff]
-            disabled:opacity-50 disabled:cursor-not-allowed
-            ${isLoading ? 'cursor-wait' : 'cursor-pointer'}
-          `}
+          className="px-8 py-1 border border-black text-sm font-medium"
+          style={{ 
+            backgroundColor: theme.buttonBg,
+            transition: 'background-color 0.2s'
+          }}
+          onMouseOver={e => e.currentTarget.style.backgroundColor = theme.buttonHover}
+          onMouseOut={e => e.currentTarget.style.backgroundColor = theme.buttonBg}
           disabled={isLoading}
         >
           {isLoading ? (
