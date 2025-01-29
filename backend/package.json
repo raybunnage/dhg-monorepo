@@ -1,0 +1,11 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "PYTHONPATH=$PYTHONPATH:.. pytest",
+    "test:watch": "pytest --watch",
+    "test:coverage": "pytest --cov",
+    "start": "uvicorn core.app:app --reload"
+  }
+} 

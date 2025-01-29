@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Response, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-from .auth import AuthService, LoginCredentials
+from .auth import AuthService, LoginCredentials, SignupCredentials
 
 # Create auth router
 auth_router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -29,6 +29,11 @@ async def signout(response: Response):
 @auth_router.get("/user")
 async def get_user():
     return await AuthService.get_current_user()
+
+
+@auth_router.post("/signup")
+async def signup(credentials: SignupCredentials):
+    return await AuthService.signup(credentials)
 
 
 # Main app

@@ -665,6 +665,149 @@
             "card": "bg-white shadow rounded-lg p-6"
           }
         }
+      },
+      {
+        "name": "backend-testing",
+        "description": "Enforce monorepo backend testing patterns",
+        "pattern": {
+          "command": "pnpm test",
+          "location": "backend",
+          "testCommands": {
+            "all": "pnpm test --filter backend",
+            "specific": "pnpm test --filter backend -- {test_path}",
+            "watch": "pnpm test:watch --filter backend",
+            "coverage": "pnpm test:coverage --filter backend"
+          },
+          "examples": [
+            {
+              "description": "Run all backend tests",
+              "command": "pnpm test --filter backend"
+            },
+            {
+              "description": "Run specific test file",
+              "command": "pnpm test --filter backend -- backend/tests/test_auth.py"
+            },
+            {
+              "description": "Run tests with pattern matching",
+              "command": "pnpm test --filter backend -- -k \"signup\""
+            }
+          ]
+        },
+        "message": "Use pnpm test commands with --filter backend for running backend tests"
+      },
+      {
+        "name": "supabase-fastapi-versions",
+        "description": "Enforce specific versions of Supabase and FastAPI",
+        "pattern": {
+          "files": ["**/requirements.txt", "**/pyproject.toml"],
+          "versionRules": {
+            "supabase": {
+              "version": "2.0.3",
+              "message": "Supabase must remain at version 2.0.3 for compatibility"
+            },
+            "fastapi": {
+              "version": "0.109.0",
+              "message": "FastAPI version must match Supabase 2.0.3 requirements"
+            }
+          }
+        },
+        "message": "Do not modify Supabase or FastAPI versions as they are required for compatibility"
+      },
+      {
+        "name": "configuration-stability",
+        "description": "Enforce careful evaluation of existing configuration before suggesting changes",
+        "pattern": {
+          "evaluationSteps": [
+            "Check if functionality already exists",
+            "Verify if current setup handles the use case",
+            "Document why change is necessary",
+            "Consider impact on existing stable configuration"
+          ],
+          "beforeChanging": {
+            "configuration": [
+              "requirements.txt",
+              "pyproject.toml",
+              "package.json",
+              "other config files"
+            ],
+            "required": [
+              "Explain why current setup cannot handle the need",
+              "Document potential impact on existing functionality",
+              "Get confirmation before making structural changes"
+            ]
+          },
+          "bestPractices": [
+            "Prefer using existing tools and configurations",
+            "Ask for clarification about current setup if unclear",
+            "Make minimal necessary changes",
+            "Maintain compatibility with existing patterns"
+          ]
+        },
+        "message": "Verify necessity of changes and check existing configuration before suggesting modifications"
+      },
+      {
+        "name": "python-dependency-management",
+        "description": "Enforce thorough dependency checking when adding to requirements.txt",
+        "pattern": {
+          "files": ["**/requirements.txt"],
+          "dependencyChecks": {
+            "required": [
+              "Check transitive dependencies",
+              "Verify version compatibility",
+              "Test in isolation"
+            ],
+            "commands": {
+              "verify": "uv pip sync requirements.txt",
+              "test": "pytest"
+            }
+          },
+          "examples": [
+            {
+              "description": "Adding new package",
+              "steps": [
+                "Add package with exact version to requirements.txt",
+                "uv pip sync to test installation",
+                "Run tests to verify compatibility"
+              ]
+            }
+          ],
+          "bestPractices": [
+            "Always specify exact versions",
+            "Document required dependencies",
+            "Test before committing changes",
+            "Check for conflicts with existing packages"
+          ]
+        },
+        "message": "Follow dependency check process when adding new packages to requirements.txt"
+      },
+      {
+        "name": "python-package-management",
+        "description": "Enforce uv usage over pip for Python package management",
+        "pattern": {
+          "command": "uv",
+          "preferredCommands": {
+            "install": "uv pip sync requirements.txt",
+            "add": "uv pip compile requirements.in",
+            "update": "uv pip compile --upgrade requirements.in"
+          },
+          "avoidCommands": {
+            "pip": ["pip install", "pip freeze", "pip uninstall"],
+            "reason": "Use uv for faster, more reliable package management"
+          },
+          "examples": [
+            {
+              "correct": "uv pip sync requirements.txt",
+              "incorrect": "pip install -r requirements.txt",
+              "explanation": "Use uv sync for reproducible environments"
+            },
+            {
+              "correct": "uv pip compile requirements.in",
+              "incorrect": "pip freeze > requirements.txt",
+              "explanation": "Use uv compile to generate requirements.txt"
+            }
+          ]
+        },
+        "message": "Use uv instead of pip for Python package management. Prefer 'uv pip sync' for installing dependencies."
       }
     ],
     "fileTypes": {
