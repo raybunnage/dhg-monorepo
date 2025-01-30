@@ -18,7 +18,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
+    setError('');
     setIsLoading(true);
     
     const formData = new FormData(e.currentTarget);
@@ -36,22 +36,20 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-start justify-start p-4"
-      style={{ backgroundColor: theme.background }}>
-      
-      <h1 className="text-4xl font-bold mb-8 px-4"
-        style={{ backgroundColor: theme.background }}>
-        Login
-      </h1>
-      
-      {error && (
-        <div className="mb-4 text-red-600">
-          {error}
-        </div>
-      )}
-      
-      <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md" role="form">
-        <div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-96">
+        <h1 className="text-4xl font-bold mb-8 px-4"
+          style={{ backgroundColor: theme.background }}>
+          Login
+        </h1>
+        
+        {error && (
+          <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+        
+        <div className="mb-4">
           <label htmlFor="email" className="text-2xl mr-2">
             Email
           </label>
@@ -60,12 +58,12 @@ const LoginPage = () => {
             type="email"
             name="email"
             required
-            className="w-full px-2 py-1 border border-black bg-white"
+            className={theme.input}
             placeholder="you@example.com"
           />
         </div>
         
-        <div>
+        <div className="mb-4">
           <label htmlFor="password" className="text-2xl mr-2">
             Password
           </label>
@@ -74,14 +72,14 @@ const LoginPage = () => {
             type="password"
             name="password"
             required
-            className="w-full px-2 py-1 border border-black bg-white"
+            className={theme.input}
             placeholder="••••••••"
           />
         </div>
 
         <button
           type="submit"
-          className="px-8 py-1 border border-black text-sm font-medium"
+          className={theme.button}
           style={{ 
             backgroundColor: theme.buttonBg,
             transition: 'background-color 0.2s'

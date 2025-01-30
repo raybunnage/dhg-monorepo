@@ -30,7 +30,10 @@ export const AuthProvider = ({ children, initialState }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, toggleLogin }}>
+    <AuthContext.Provider value={{ 
+      isLoggedIn, 
+      toggleLogin
+    }}>
       {children}
     </AuthContext.Provider>
   );
