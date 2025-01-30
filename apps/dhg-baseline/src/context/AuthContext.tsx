@@ -25,34 +25,41 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<any>(null);
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
   const login = async (email: string, password: string) => {
-    const API_URL = 'http://localhost:8000/api/auth/login';
+    const LOGIN_URL = `${API_URL}/api/auth/login`;
     console.log('Starting login attempt...');
     
     try {
       // First test if the backend is reachable
-      const healthCheck = await fetch('http://localhost:8000/api/health')
-        .then(res => res.json())
-        .catch(err => {
-          console.error('Health check failed:', err);
-          return null;
-        });
+      const healthCheck = await fetch(`${API_URL}/api/health`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        },
+        credentials: 'include',
+        mode: 'cors'
+      });
       
-      console.log('Health check result:', healthCheck);
+      const healthData = await healthCheck.json();
+      console.log('Health check result:', healthData);
 
-      if (!healthCheck) {
-        throw new Error('Backend appears to be unreachable');
+      if (!healthData || healthData.status !== 'healthy') {
+        throw new Error('Backend health check failed');
       }
 
-      console.log('Attempting login to:', API_URL);
-      const response = await fetch(API_URL, {
+      console.log('Attempting login to:', LOGIN_URL);
+      const payload = { email, password };
+      console.log('Login payload:', { email, password: '***' });
+      const response = await fetch(LOGIN_URL, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
         credentials: 'include',
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify(payload)
       });
 
       console.log('Response received:', {
@@ -83,19 +90,34 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signup = async (email: string, password: string, passwordConfirmation: string) => {
     try {
-      const response = await fetch('http://localhost:8000/api/auth/signup', {
+      console.log('Starting signup attempt for:', email);
+      const response = await fetch(`${API_URL}/api/auth/signup`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         credentials: 'include',
         body: JSON.stringify({ email, password, password_confirmation: passwordConfirmation })
       });
 
+      console.log('Signup response status:', response.status);
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
+
       if (!response.ok) {
-        const error = await response.json();
+        let error;
+        try {
+          error = JSON.parse(responseText);
+        } catch {
+          error = { detail: responseText };
+        }
+        console.error('Signup error response:', error);
         throw new Error(error.detail || 'Signup failed');
       }
 
-      const data = await response.json();
+      const data = JSON.parse(responseText);
+      console.log('Signup success data:', data);
       setUser(data.user);
       setIsLoggedIn(true);
     } catch (error) {
@@ -106,8 +128,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = async () => {
     try {
-      await fetch('http://localhost:8000/api/auth/signout', {
+      await fetch(`${API_URL}/api/auth/signout`, {
         method: 'POST',
+        headers: {
+          'Accept': 'application/json'
+        },
         credentials: 'include'
       });
       setUser(null);

@@ -2,6 +2,19 @@ from fastapi import FastAPI, Response, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from .auth import AuthService, LoginCredentials, SignupCredentials
 
+# Create the FastAPI app first
+app = FastAPI(title="DHG Hub API")
+
+# Configure CORS immediately after app creation and before routes
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:5177"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
+
 # Create auth router
 auth_router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -35,11 +48,13 @@ async def get_user():
 
 @auth_router.post("/signup")
 async def signup(credentials: SignupCredentials):
+    print(f"Received signup request for: {credentials.email}")  # Debug log
     return await AuthService.signup(credentials)
 
 
-# Main app
-app = FastAPI(title="DHG Hub API")
+@auth_router.options("/{path:path}")
+async def auth_options(path: str):
+    return Response(status_code=200)
 
 
 # Add root endpoint
@@ -48,19 +63,16 @@ async def root():
     return {"message": "Backend server is running"}
 
 
-# Configure CORS - temporarily more permissive for debugging
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Update this to match your frontend port
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Include routers
-app.include_router(auth_router)
-
-
 @app.get("/api/health")
 async def health_check():
-    return {"status": "healthy"}
+    return Response(
+        content='{"status": "healthy"}',
+        media_type="application/json",
+        headers={
+            "Access-Control-Allow-Origin": "http://localhost:5177",
+            "Access-Control-Allow-Credentials": "true",
+        }
+    )
+
+# Include routers after CORS configuration
+app.include_router(auth_router)
