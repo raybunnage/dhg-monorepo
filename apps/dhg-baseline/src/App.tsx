@@ -1,5 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import { AuthProvider } from './context/AuthContext';
@@ -9,13 +8,14 @@ const App = () => {
 
   return (
     <AuthProvider>
-      <Layout>
+      <Router>
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<LoginPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
         </Routes>
-      </Layout>
+      </Router>
     </AuthProvider>
   );
 };

@@ -2,6 +2,8 @@ from fastapi import HTTPException
 from .supabase_client import supabase
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from supabase import create_client
+from .config import get_settings
 
 
 class LoginCredentials(BaseModel):
@@ -103,22 +105,42 @@ class AuthService:
 
     @staticmethod
     async def signup(credentials: SignupCredentials) -> AuthResponse:
+        print(f"Starting signup process for email: {credentials.email}")
         # Validate passwords match
         if credentials.password != credentials.password_confirmation:
+            print("Password mismatch during signup")
             raise HTTPException(status_code=400, detail="Passwords do not match")
 
         # Validate password strength
         if len(credentials.password) < 8:
+            print("Password too short during signup")
             raise HTTPException(
                 status_code=400, detail="Password must be at least 8 characters long"
             )
 
         try:
-            auth_response = supabase.auth.sign_up(
+            print("Attempting Supabase signup with admin client...")
+            # Create admin client with service role key
+            settings = get_settings()
+            admin_client = create_client(
+                settings.supabase_url, settings.supabase_service_role_key
+            )
+
+            auth_response = admin_client.auth.sign_up(
                 {"email": credentials.email, "password": credentials.password}
+            )
+            print(
+                "Supabase signup response received:",
+                {
+                    "has_user": bool(auth_response.user),
+                    "has_session": bool(auth_response.session),
+                    "response": str(auth_response),
+                    "using": "admin client",
+                },
             )
 
             if not auth_response.user:
+                print("No user returned from Supabase signup")
                 raise HTTPException(status_code=400, detail="Signup failed")
 
             user_dict = dict(auth_response.user)
@@ -126,6 +148,7 @@ class AuthService:
                 dict(auth_response.session) if auth_response.session else None
             )
 
+            print("Signup successful, returning response")
             return AuthResponse(
                 user=user_dict,
                 session=session_dict,
@@ -133,8 +156,28 @@ class AuthService:
             )
 
         except Exception as e:
-            if "User already registered" in str(e):
+            print(f"Signup error: {str(e)}")
+            error_msg = str(e).lower()
+            if "user already registered" in error_msg:
                 raise HTTPException(status_code=400, detail="Email already registered")
+            if "duplicate key value" in error_msg:
+                raise HTTPException(status_code=400, detail="Email already registered")
+            if "user not allowed" in error_msg:
+                # Try direct signup without checking existing users
+                try:
+                    auth_response = supabase.auth.sign_up(
+                        {"email": credentials.email, "password": credentials.password}
+                    )
+                    if auth_response.user:
+                        return AuthResponse(
+                            user=dict(auth_response.user),
+                            session=dict(auth_response.session)
+                            if auth_response.session
+                            else None,
+                            message="Signup successful. Please check your email for verification.",
+                        )
+                except Exception as signup_error:
+                    print(f"Direct signup error: {str(signup_error)}")
             raise HTTPException(
                 status_code=400, detail="Signup failed. Please try again."
             )

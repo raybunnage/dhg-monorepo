@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 // Define a simple auth state type
 interface AuthState {
@@ -11,7 +11,7 @@ interface AuthProviderProps {
   initialState?: Partial<AuthState>;
 }
 
-export const AuthContext = React.createContext<AuthState>({
+export const AuthContext = createContext<AuthState>({
   isLoggedIn: false,
   toggleLogin: () => {}
 });
@@ -22,9 +22,6 @@ export const AuthProvider = ({ children, initialState }: AuthProviderProps) => {
   console.log('Auth State:', { isLoggedIn });
 
   const toggleLogin = () => {
-    if (initialState?.toggleLogin) {
-      initialState.toggleLogin();
-    }
     setIsLoggedIn(!isLoggedIn);
     console.log('Toggling login state');
   };
@@ -39,10 +36,7 @@ export const AuthProvider = ({ children, initialState }: AuthProviderProps) => {
   );
 };
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
   return context;
 } 

@@ -1,13 +1,17 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
   const { toggleLogin } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [isConfirmation, setIsConfirmation] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isSignup, setIsSignup] = React.useState(false);
+
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
   // Ocean Blue theme colors
   const theme = {
@@ -16,6 +20,15 @@ const LoginPage = () => {
     buttonBg: '#99d6ff',
     buttonHover: '#80ccff',
   };
+
+  React.useEffect(() => {
+    // Check if this is a signup confirmation
+    const token = searchParams.get('token');
+    if (token) {
+      setIsConfirmation(true);
+      setIsSignup(true);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,8 +40,49 @@ const LoginPage = () => {
     const password = formData.get('password') as string;
 
     if (isSignup) {
-      setIsSignup(false);
-      setError('Signup not implemented yet');
+      try {
+        const passwordConfirmation = formData.get('passwordConfirmation') as string;
+        const signupData = { 
+          email, 
+          password, 
+          password_confirmation: passwordConfirmation 
+        };
+        console.log('Attempting signup with:', { 
+          email, 
+          passwordLength: password.length,
+          passwordsMatch: password === passwordConfirmation,
+          requestBody: signupData
+        });
+
+        const response = await fetch(`${API_URL}/api/auth/signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(signupData)
+        });
+        
+        const responseData = await response.json();
+        console.log('Signup response:', {
+          status: response.status,
+          ok: response.ok,
+          data: responseData,
+          headers: Object.fromEntries(response.headers.entries())
+        });
+        
+        if (!response.ok) {
+          throw new Error(responseData.detail || 'Signup failed');
+        }
+
+        // On successful signup, switch to login
+        setIsSignup(false);
+        setError('Account created! Please check your email for verification.');
+      } catch (err) {
+        console.error('Signup error:', err);
+        setError(err instanceof Error ? err.message : 'Signup failed');
+      }
       setIsLoading(false);
       return;
     }
@@ -46,9 +100,10 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h1 className="text-4xl font-bold mb-8 px-4"
-          style={{ backgroundColor: theme.background }}>
-          {isSignup ? 'Create Account' : 'Login'}
+        <h1 className="text-2xl mb-6 text-center">
+          {isConfirmation 
+            ? 'Set Your Password' 
+            : (isSignup ? 'Create Account' : 'Login')}
         </h1>
         
         {error && (

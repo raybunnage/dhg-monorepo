@@ -1,6 +1,8 @@
-from fastapi import FastAPI, Response, APIRouter
+from fastapi import FastAPI, Response, APIRouter, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from .auth import AuthService, LoginCredentials, SignupCredentials
+from .supabase_client import supabase
+from .config import get_settings
 
 # Create auth router
 auth_router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -33,7 +35,26 @@ async def get_user():
 
 @auth_router.post("/signup")
 async def signup(credentials: SignupCredentials):
+    print(f"Received signup request for: {credentials.email}")
     return await AuthService.signup(credentials)
+
+
+@auth_router.get("/debug/users")
+async def list_users():
+    try:
+        settings = get_settings()
+        # Create admin client with service role key
+        from supabase import create_client
+        admin_client = create_client(
+            settings.supabase_url,
+            settings.supabase_service_role_key
+        )
+        users = admin_client.auth.admin.list_users()
+        print("Current users:", users)
+        return {"users": users}
+    except Exception as e:
+        print(f"Error listing users: {e}")
+        return {"error": str(e)}
 
 
 # Main app
