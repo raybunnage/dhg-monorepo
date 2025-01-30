@@ -8,14 +8,16 @@ auth_router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 @auth_router.post("/login")
 async def login(request: LoginCredentials, response: Response):
+    print(f"Login attempt for email: {request.email}")  # Debug log
     auth_response = await AuthService.login(request)
-    response.set_cookie(
-        key="sb-access-token",
-        value=auth_response.session.access_token,
-        httponly=True,
-        secure=True,
-        samesite="lax",
-    )
+    if auth_response.session:
+        response.set_cookie(
+            key="sb-access-token",
+            value=auth_response.session.access_token,
+            httponly=True,
+            secure=True,
+            samesite="lax",
+        )
     return {"user": auth_response.user, "message": "Login successful"}
 
 
@@ -46,10 +48,10 @@ async def root():
     return {"message": "Backend server is running"}
 
 
-# Configure CORS
+# Configure CORS - temporarily more permissive for debugging
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5177"],
+    allow_origins=["http://localhost:5173"],  # Update this to match your frontend port
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

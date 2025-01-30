@@ -1,10 +1,11 @@
 from supabase import create_client
-from .config import get_settings
+import os
+from dotenv import load_dotenv
 
-settings = get_settings()
+load_dotenv()
 
-# Initialize Supabase client with anon key
+# Initialize Supabase client with service key
 supabase = create_client(
-    settings.supabase_url,
-    settings.supabase_anon_key
+    os.getenv("SUPABASE_URL"),
+    os.getenv("SUPABASE_SERVICE_ROLE_KEY")  # Using the service role key
 ) 

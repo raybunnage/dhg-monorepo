@@ -25,6 +25,7 @@ class AuthService:
     @staticmethod
     async def login(credentials: LoginCredentials) -> AuthResponse:
         try:
+            print(f"Attempting Supabase login for: {credentials.email}")  # Debug log
             auth_response = supabase.auth.sign_in_with_password(
                 {"email": credentials.email, "password": credentials.password}
             )
@@ -38,7 +39,11 @@ class AuthService:
                 message="Login successful",
             )
         except Exception as e:
-            print(f"Login error: {str(e)}")
+            print(f"Login error: {str(e)}, Type: {type(e)}")  # Enhanced debug log
+            if hasattr(e, "status_code"):
+                print(f"Status code: {e.status_code}")
+            if hasattr(e, "response"):
+                print(f"Response: {e.response}")
             raise HTTPException(status_code=401, detail="Invalid credentials")
 
     @staticmethod

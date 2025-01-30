@@ -26,24 +26,57 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<any>(null);
 
   const login = async (email: string, password: string) => {
+    const API_URL = 'http://localhost:8000/api/auth/login';
+    console.log('Starting login attempt...');
+    
     try {
-      const response = await fetch('http://localhost:8000/api/auth/login', {
+      // First test if the backend is reachable
+      const healthCheck = await fetch('http://localhost:8000/api/health')
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Health check failed:', err);
+          return null;
+        });
+      
+      console.log('Health check result:', healthCheck);
+
+      if (!healthCheck) {
+        throw new Error('Backend appears to be unreachable');
+      }
+
+      console.log('Attempting login to:', API_URL);
+      const response = await fetch(API_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         credentials: 'include',
         body: JSON.stringify({ email, password })
       });
 
+      console.log('Response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+
       if (!response.ok) {
         const error = await response.json();
+        console.error('Login error response:', error);
         throw new Error(error.detail || 'Login failed');
       }
 
       const data = await response.json();
+      console.log('Login success data:', data);
       setUser(data.user);
       setIsLoggedIn(true);
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Login error details:', {
+        error,
+        message: error.message,
+        type: error.constructor.name
+      });
       throw error;
     }
   };
