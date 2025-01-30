@@ -79,12 +79,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(data.user);
       setIsLoggedIn(true);
     } catch (error) {
-      console.error('Login error details:', {
-        error,
-        message: error.message,
-        type: error.constructor.name
-      });
-      throw error;
+      console.error('Login error:', error);
+      throw error instanceof Error ? error : new Error('Login failed');
     }
   };
 

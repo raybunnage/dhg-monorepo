@@ -35,10 +35,11 @@ const LoginPage = () => {
       } else {
         await login(email, password);
       }
+      setIsLoading(false);
       navigate('/dashboard');
     } catch (err) {
+      console.error('Login/Signup error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
       setIsLoading(false);
     }
   };
