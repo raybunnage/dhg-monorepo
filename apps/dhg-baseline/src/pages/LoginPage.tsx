@@ -36,10 +36,18 @@ const LoginPage = () => {
   React.useEffect(() => {
     // Debug all URL parameters
     const allParams = Object.fromEntries(searchParams.entries());
-    // Check URL hash for errors
     const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
     const errorCode = hashParams.get('error_code');
     const errorDescription = hashParams.get('error_description');
+
+    // Check if this is a recovery flow
+    const isRecoveryFlow = type === 'recovery';
+    console.log('🔄 Recovery flow check:', { 
+      type,
+      token,
+      isRecoveryFlow,
+      currentUrl: window.location.href 
+    });
 
     console.log('🔍 URL Parameters:', { 
       allParams,
@@ -112,12 +120,10 @@ const LoginPage = () => {
           setIsResetPassword(false);
           setIsSignup(false);
       }
-    } else {
-      console.log('🔒 No token found, type:', type);
-      setIsConfirmation(false);
-      if (type !== 'recovery') {
-        setIsResetPassword(false);
-      }
+    } else if (isRecoveryFlow) {
+      // Handle recovery without token (initial reset request)
+      console.log('🔄 Starting password reset request flow');
+      setIsResetPassword(true);
       setIsSignup(false);
     }
   }, [type, token, searchParams]);
@@ -327,17 +333,17 @@ const LoginPage = () => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
-    
-    // Clean the token
-    const cleanToken = token?.split('#')[0] || '';
-    console.log('🔑 Using token:', cleanToken.slice(0, 10) + '...');
+
+    // Get the token from URL params
+    const urlToken = searchParams.get('token');
+    console.log('🔑 Reset token from URL:', urlToken);
 
     const formData = new FormData(e.currentTarget);
     const password = formData.get('password') as string;
     const passwordConfirmation = formData.get('passwordConfirmation') as string;
 
-    if (password !== passwordConfirmation) {
-      setError('Passwords do not match');
+    if (!urlToken) {
+      setError('Missing reset token');
       setIsLoading(false);
       return;
     }
@@ -349,7 +355,7 @@ const LoginPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          token: cleanToken,
+          token: urlToken,
           password 
         })
       });
@@ -389,7 +395,8 @@ const LoginPage = () => {
                 onClick={() => {
                   const searchParams = new URLSearchParams(window.location.search);
                   searchParams.set('type', 'recovery');
-                  searchParams.set('token', 'actual-user-id-from-logs');
+                  // For testing, we'll simulate the initial reset request
+                  // The token will come from the email link
                   window.history.pushState(
                     {},
                     '',

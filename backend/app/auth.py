@@ -281,8 +281,6 @@ class AuthService:
     async def request_reset_password(request: ResetPasswordRequest) -> dict:
         try:
             print("🔄 Requesting password reset for:", request.email)
-
-            # Send reset password email
             reset_options = {
                 "redirect_to": "http://localhost:5177/login",
                 "email_template": {"linktype": "recovery"},
@@ -292,14 +290,13 @@ class AuthService:
             auth_response = supabase.auth.reset_password_email(
                 email=request.email, options=reset_options
             )
-            print("✉️ Reset email requested for:", request.email)
+            # Log the full URL structure that Supabase will use
             print(
-                "📧 Full Supabase response:",
+                "🔗 Expected reset URL structure:",
                 {
-                    "status": getattr(auth_response, "status", None),
-                    "error": getattr(auth_response, "error", None),
-                    "data": getattr(auth_response, "data", None),
-                    "raw": auth_response,
+                    "base": "http://localhost:5177/login",
+                    "params": "?type=recovery&token=[TOKEN]",
+                    "full_example": "http://localhost:5177/login?type=recovery&token=xxx",
                 },
             )
 
