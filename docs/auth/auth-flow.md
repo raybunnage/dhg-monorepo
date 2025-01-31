@@ -69,6 +69,83 @@ The login page (`/login`) handles different states based on URL parameters:
 
 ## Session Management
 
+### Understanding Cookies
+
+#### What are Cookies?
+Cookies are small pieces of data stored in the browser that help maintain state between requests. In our auth system:
+
+```typescript
+// Cookie set by backend after successful login
+response.set_cookie(
+    key="sb-access-token",      // Cookie name
+    value=session["access_token"], // JWT token
+    httponly=True,              // Not accessible via JavaScript
+    secure=True,                // Only sent over HTTPS
+    samesite="lax"             // CSRF protection
+)
+```
+
+#### Cookie Properties Explained
+| Property | Value | Purpose |
+|----------|--------|----------|
+| `httponly` | `True` | Prevents XSS attacks by blocking JavaScript access |
+| `secure` | `True` | Ensures cookie only sent over HTTPS |
+| `samesite` | `"lax"` | Protects against CSRF while allowing normal navigation |
+
+#### Cookie Flow
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant F as Frontend
+    participant BE as Backend
+    participant S as Supabase
+
+    B->>F: User logs in
+    F->>BE: POST /api/auth/login
+    BE->>S: Authenticate
+    S-->>BE: Session token
+    BE-->>B: Set-Cookie header
+    Note over B: Stores cookie
+    
+    B->>BE: Future requests
+    Note over B,BE: Cookie sent automatically
+    BE->>S: Validate token
+```
+
+#### Cookie Security
+1. **HttpOnly**: Prevents JavaScript access
+   ```typescript
+   // ❌ Not possible due to httpOnly
+   document.cookie = "sb-access-token=123"
+   ```
+
+2. **Secure Flag**: HTTPS only
+   ```typescript
+   // Local development exception
+   const isSecure = process.env.NODE_ENV === 'production'
+   ```
+
+3. **SameSite**: CSRF Protection
+   ```typescript
+   // Allows navigation but blocks cross-origin requests
+   samesite="lax"
+   ```
+
+#### Development vs Production
+```typescript
+// Cookie options by environment
+const cookieOptions = {
+  development: {
+    secure: false,    // Allow HTTP
+    domain: 'localhost'
+  },
+  production: {
+    secure: true,     // Require HTTPS
+    domain: '.dhg-hub.org'
+  }
+}
+```
+
 ### Cookie Structure
 ```typescript
 response.set_cookie(
