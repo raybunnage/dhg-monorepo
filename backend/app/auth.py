@@ -4,6 +4,7 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 from supabase import create_client
 from .config import get_settings
+import uuid
 
 
 class LoginCredentials(BaseModel):
@@ -228,47 +229,87 @@ class AuthService:
     @staticmethod
     async def set_password(request: SetPasswordRequest) -> dict:
         try:
-            print(f"Attempting to set password with token: {request.token[:10]}...")
-            # Create admin client with service role key
+            print(
+                "🔑 Received token:",
+                {
+                    "token": request.token[:10] + "..." if request.token else "None",
+                    "length": len(request.token) if request.token else 0,
+                },
+            )
+
+            # Clean the token - remove any URL encoding or extra characters
+            cleaned_token = request.token.strip()
+            if "#" in cleaned_token:
+                cleaned_token = cleaned_token.split("#")[0]
+
+            if not AuthService.is_valid_uuid(cleaned_token):
+                print("❌ Invalid token format:", cleaned_token[:10] + "...")
+                raise HTTPException(status_code=400, detail="Invalid token format")
+
+            print(f"Attempting to set password with token: {cleaned_token[:10]}...")
+
+            # Use admin client with service role key for password reset
             settings = get_settings()
             admin_client = create_client(
                 settings.supabase_url, settings.supabase_service_role_key
             )
 
-            # Verify the token and set the password
-            result = admin_client.auth.admin.update_user_by_id(
-                request.token,  # This is actually the user ID
-                {"password": request.password},
-            )
-            print("Supabase response:", result)
-
-            if not result.user:
-                print("No user returned from Supabase")
-                raise HTTPException(status_code=400, detail="Invalid token")
-
-            return {"message": "Password set successfully"}
+            try:
+                response = admin_client.auth.admin.update_user_by_id(
+                    cleaned_token, {"password": request.password}
+                )
+                print("✅ Password update response:", response)
+                return {"message": "Password updated successfully"}
+            except Exception as e:
+                print(f"🚨 Error setting password: {str(e)}")
+                raise HTTPException(status_code=400, detail=str(e))
+        except HTTPException:
+            raise
         except Exception as e:
-            print(f"Error setting password: {str(e)}")
-            raise HTTPException(status_code=400, detail=str(e))
+            print(f"Unexpected error: {str(e)}")
+            raise HTTPException(status_code=500, detail="Internal server error")
+
+    @staticmethod
+    def is_valid_uuid(uuid_string: str) -> bool:
+        try:
+            uuid.UUID(uuid_string)
+            return True
+        except ValueError:
+            return False
 
     @staticmethod
     async def request_reset_password(request: ResetPasswordRequest) -> dict:
-        """Request a password reset email from Supabase"""
         try:
-            print(f"Requesting password reset for: {request.email}")
-            result = supabase.auth.reset_password_email(email=request.email)
-            print("Password reset email requested successfully")
+            print("🔄 Requesting password reset for:", request.email)
+
+            # Send reset password email
+            reset_options = {
+                "redirect_to": "http://localhost:5177/login",
+                "email_template": {"linktype": "recovery"},
+            }
+            print("📧 Reset options:", reset_options)
+
+            auth_response = supabase.auth.reset_password_email(
+                email=request.email, options=reset_options
+            )
+            print("✉️ Reset email requested for:", request.email)
+            print(
+                "📧 Full Supabase response:",
+                {
+                    "status": getattr(auth_response, "status", None),
+                    "error": getattr(auth_response, "error", None),
+                    "data": getattr(auth_response, "data", None),
+                    "raw": auth_response,
+                },
+            )
+
             return {
-                "message": "If an account exists with this email, "
-                "you will receive a password reset link"
+                "message": "If an account exists with this email, you will receive a password reset link"
             }
         except Exception as e:
-            print(f"Error requesting password reset: {e}")
-            # Return same message even if email doesn't exist (security best practice)
-            return {
-                "message": "If an account exists with this email, "
-                "you will receive a password reset link"
-            }
+            print(f"🚨 Reset password error: {str(e)}")
+            print(f"🚨 Error type: {type(e)}")
+            raise HTTPException(status_code=400, detail=str(e))
 
     @staticmethod
     async def verify_email(token: str) -> dict:

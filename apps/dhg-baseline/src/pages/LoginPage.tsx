@@ -2,15 +2,23 @@ import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+// Type for reset password errors
+type ResetPasswordError = {
+  email?: string;
+  token?: string;
+  general?: string;
+};
+
 const LoginPage = () => {
   const { toggleLogin } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isConfirmation, setIsConfirmation] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isSignup, setIsSignup] = React.useState(false);
-  const [isPasswordReset, setIsPasswordReset] = React.useState(false);
+  const [isResetPassword, setIsResetPassword] = React.useState(false);
   const type = searchParams.get('type');
   const token = searchParams.get('token');
 
@@ -26,16 +34,56 @@ const LoginPage = () => {
   };
 
   React.useEffect(() => {
+    // Debug all URL parameters
+    const allParams = Object.fromEntries(searchParams.entries());
+    // Check URL hash for errors
+    const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
+    const errorCode = hashParams.get('error_code');
+    const errorDescription = hashParams.get('error_description');
+
+    console.log('🔍 URL Parameters:', { 
+      allParams,
+      type,
+      token,
+      hashError: errorCode,
+      hashErrorDescription: errorDescription,
+      currentUrl: window.location.href
+    });
+
+    // Handle error cases from hash
+    if (errorCode) {
+      console.log('⚠️ Auth error:', { errorCode, errorDescription });
+      switch (errorCode) {
+        case 'otp_expired':
+          setError('Password reset link has expired. Please request a new one.');
+          break;
+        case 'access_denied':
+          setError('Invalid or expired link. Please request a new password reset.');
+          break;
+        default:
+          setError('Authentication error. Please try again.');
+      }
+      // Clear hash to prevent showing error again on refresh
+      window.history.replaceState(null, '', window.location.pathname);
+      return;
+    }
+
     console.log('🔑 Auth flow:', { 
       type, 
       hasToken: !!token,
       isConfirmation,
       isSignup,
-      isPasswordReset,
-      currentPath: window.location.pathname
+      isResetPassword,
+      currentPath: window.location.pathname,
+      states: {
+        isConfirmation,
+        isResetPassword,
+        isSignup
+      }
     });
 
     if (token) {
+      console.log('🎫 Token found:', token.slice(0, 10) + '...');
       switch (type) {
         case 'invite':
           setIsConfirmation(true);
@@ -43,18 +91,48 @@ const LoginPage = () => {
           console.log('👋 Invite flow:', { token: token.slice(0, 10) + '...' });
           break;
         case 'recovery':
+          console.log('🔄 Starting recovery flow with token');
           setIsConfirmation(true);
-          setIsPasswordReset(true);
-          console.log('🔄 Recovery flow:', { token: token.slice(0, 10) + '...' });
+          setIsResetPassword(true);
+          setIsSignup(false);
+          console.log('🔄 Recovery state set:', {
+            isConfirmation: true,
+            isResetPassword: true,
+            isSignup: false
+          });
           break;
         case 'signup':
           setIsConfirmation(true);
           setIsSignup(true);
           console.log('📝 Signup verification:', { token: token.slice(0, 10) + '...' });
           break;
+        default:
+          console.log('⚠️ Unknown type with token:', type);
+          setIsConfirmation(false);
+          setIsResetPassword(false);
+          setIsSignup(false);
       }
+    } else {
+      console.log('🔒 No token found, type:', type);
+      setIsConfirmation(false);
+      if (type !== 'recovery') {
+        setIsResetPassword(false);
+      }
+      setIsSignup(false);
     }
-  }, [searchParams]);
+  }, [type, token, searchParams]);
+
+  // Debug render states
+  React.useEffect(() => {
+    console.log('🎨 Render state:', {
+      isConfirmation,
+      isResetPassword,
+      isSignup,
+      hasToken: !!token,
+      type,
+      showingForm: isResetPassword ? (token ? 'SetNewPassword' : 'RequestReset') : (isSignup ? 'Signup' : 'Login')
+    });
+  }, [isConfirmation, isResetPassword, isSignup, token, type]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -63,7 +141,7 @@ const LoginPage = () => {
     console.log('📤 Form submission:', { 
       isConfirmation, 
       isSignup, 
-      isPasswordReset,
+      isResetPassword,
       hasToken: !!token 
     });
     
@@ -190,32 +268,249 @@ const LoginPage = () => {
     setIsLoading(false);
   };
 
-  switch (type) {
-    case 'recovery':
-      // Should show password reset form
-      return <PasswordResetForm />;
-    case 'signup':
-      // Should show email verification success
-      return <EmailVerifiedMessage />;
-    default:
-      // Normal login form
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <form 
-            onSubmit={handleSubmit} 
-            className="bg-white p-8 rounded-lg shadow-md w-96"
-            role="form"
-            aria-label="Login Form"
-          >
-            <h1 className="text-2xl mb-6 text-center">
-              {isConfirmation
-                ? 'Set Your Password'
-                : (isSignup ? 'Create Account' : 'Login')}
-            </h1>
-            
+  const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setSuccessMessage(null);
+    setIsLoading(true);
+    
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email') as string;
+
+    // Basic email validation
+    if (!email || !email.includes('@')) {
+      setError({ email: 'Please enter a valid email address' });
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/auth/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setSuccessMessage('If an account exists with this email, you will receive a password reset link');
+        setIsResetPassword(false);
+      } else {
+        // Handle specific error cases
+        switch (response.status) {
+          case 429:
+            throw new Error('Too many reset attempts. Please try again later.');
+          case 400:
+            if (data.detail?.includes('email')) {
+              setError({ email: data.detail });
+            } else {
+              throw new Error(data.detail || 'Invalid request');
+            }
+            break;
+          default:
+            throw new Error('Failed to request password reset');
+        }
+      }
+    } catch (error) {
+      console.error('🚨 Reset password error:', error);
+      setError(error instanceof Error ? error.message : 'Failed to request password reset');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSetNewPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+    
+    // Clean the token
+    const cleanToken = token?.split('#')[0] || '';
+    console.log('🔑 Using token:', cleanToken.slice(0, 10) + '...');
+
+    const formData = new FormData(e.currentTarget);
+    const password = formData.get('password') as string;
+    const passwordConfirmation = formData.get('passwordConfirmation') as string;
+
+    if (password !== passwordConfirmation) {
+      setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/auth/set-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          token: cleanToken,
+          password 
+        })
+      });
+
+      const data = await response.json();
+      console.log('📡 Set password response:', {
+        status: response.status,
+        ok: response.ok,
+        data
+      });
+      
+      if (response.ok) {
+        setIsResetPassword(false);
+        setIsConfirmation(false);
+        console.log('✅ Password reset successful');
+        alert('Password has been reset successfully. Please login.');
+      } else {
+        throw new Error(data.detail || 'Failed to reset password');
+      }
+    } catch (error) {
+      console.error('🚨 Set password error:', error);
+      setError(error instanceof Error ? error.message : 'Failed to reset password');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="bg-white p-8 rounded shadow-md w-96">
+        {/* Debug controls - only in development */}
+        {import.meta.env.DEV && (
+          <div className="mb-4 p-2 bg-gray-100 rounded text-sm">
+            <p className="font-bold mb-2">Debug Controls:</p>
+            <div className="space-x-2">
+              <button
+                onClick={() => {
+                  const searchParams = new URLSearchParams(window.location.search);
+                  searchParams.set('type', 'recovery');
+                  searchParams.set('token', 'actual-user-id-from-logs');
+                  window.history.pushState(
+                    {},
+                    '',
+                    `${window.location.pathname}?${searchParams.toString()}`
+                  );
+                  // Force re-render
+                  window.location.reload();
+                }}
+                className="bg-blue-500 text-white px-2 py-1 rounded text-xs"
+              >
+                Test Recovery Flow
+              </button>
+              <button
+                onClick={() => {
+                  console.log('Current State:', {
+                    isConfirmation,
+                    isResetPassword,
+                    isSignup,
+                    type,
+                    token,
+                    searchParams: Object.fromEntries(searchParams.entries())
+                  });
+                }}
+                className="bg-green-500 text-white px-2 py-1 rounded text-xs"
+              >
+                Log State
+              </button>
+            </div>
+          </div>
+        )}
+
+        <h2 className="text-2xl mb-6 text-center">
+          {isResetPassword ? (token ? 'Set New Password' : 'Reset Password') : isSignup ? 'Create Account' : 'Login'}
+        </h2>
+
+        {isResetPassword ? (
+          token ? (
+            <form onSubmit={handleSetNewPassword}>
+              <div className="mb-4">
+                <label htmlFor="password" className="text-2xl mr-2">
+                  New Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  name="password"
+                  required
+                  className={theme.input}
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="passwordConfirmation" className="text-2xl mr-2">
+                  Confirm Password
+                </label>
+                <input
+                  id="passwordConfirmation"
+                  type="password"
+                  name="passwordConfirmation"
+                  required
+                  className={theme.input}
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-8 py-1 border border-black text-sm font-medium"
+                style={{ 
+                  backgroundColor: theme.buttonBg,
+                  transition: 'background-color 0.2s'
+                }}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Setting Password...' : 'Set New Password'}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleResetPassword}>
+              <div className="mb-4">
+                <label htmlFor="email" className="text-2xl mr-2">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  required
+                  className={theme.input}
+                  placeholder="you@example.com"
+                  autoComplete="username email"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-8 py-1 border border-black text-sm font-medium"
+                style={{ 
+                  backgroundColor: theme.buttonBg,
+                  transition: 'background-color 0.2s'
+                }}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Sending...' : 'Send Reset Link'}
+              </button>
+              <div className="mt-4 text-center">
+                <button
+                  type="button"
+                  onClick={() => setIsResetPassword(false)}
+                  className="text-blue-800 hover:text-blue-600 text-sm"
+                >
+                  Back to Login
+                </button>
+              </div>
+            </form>
+          )
+        ) : (
+          <form onSubmit={handleSubmit}>
             {error && (
               <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
-                {error}
+                {error.general || error}
               </div>
             )}
             
@@ -231,6 +526,7 @@ const LoginPage = () => {
                   required
                   className={theme.input}
                   placeholder="you@example.com"
+                  autoComplete="username email"
                 />
               </div>
             )}
@@ -246,6 +542,7 @@ const LoginPage = () => {
                 required
                 className={theme.input}
                 placeholder="••••••••"
+                autoComplete="current-password"
               />
             </div>
 
@@ -299,11 +596,33 @@ const LoginPage = () => {
                   ? 'Already have an account? Log in' 
                   : 'Need an account? Sign up'}
               </button>
+              {!isSignup && (
+                <button
+                  type="button"
+                  onClick={() => setIsResetPassword(true)}
+                  className="text-blue-800 hover:text-blue-600 text-sm ml-4"
+                >
+                  Forgot password?
+                </button>
+              )}
             </div>
           </form>
-        </div>
-      );
-  }
+        )}
+
+        {successMessage && (
+          <div className="mb-4 p-2 bg-green-50 border border-green-500 text-green-700 rounded">
+            {successMessage}
+          </div>
+        )}
+
+        {error && (
+          <div className="mt-4 text-red-500 text-sm text-center">
+            {error}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default LoginPage; 
