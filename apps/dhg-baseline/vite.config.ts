@@ -17,12 +17,18 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       port: 5177,
+      host: true,
       proxy: {
         '/api': {
           target: 'http://localhost:8000',
           changeOrigin: true,
         },
       },
+      allowedHosts: [
+        'localhost',
+        '.ngrok-free.app',
+        '.ngrok.io'
+      ],
     },
     define: {
       __ENV_CHECK__: JSON.stringify({

@@ -86,3 +86,8 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+
+# Ngrok
+.ngrok/
+.ngrok.yml
+ngrok.yml

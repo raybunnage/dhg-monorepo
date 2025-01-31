@@ -19,11 +19,13 @@ const LoginPage = () => {
     secondary: '#99d6ff',
     buttonBg: '#99d6ff',
     buttonHover: '#80ccff',
+    input: 'w-full px-2 py-1 border border-black bg-white'
   };
 
   React.useEffect(() => {
     // Check if this is a signup confirmation
     const token = searchParams.get('token');
+    
     if (token) {
       setIsConfirmation(true);
       setIsSignup(true);
@@ -101,8 +103,8 @@ const LoginPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-96">
         <h1 className="text-2xl mb-6 text-center">
-          {isConfirmation 
-            ? 'Set Your Password' 
+          {isConfirmation
+            ? 'Set Your Password'
             : (isSignup ? 'Create Account' : 'Login')}
         </h1>
         
@@ -112,19 +114,21 @@ const LoginPage = () => {
           </div>
         )}
         
-        <div className="mb-4">
-          <label htmlFor="email" className="text-2xl mr-2">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            name="email"
-            required
-            className={theme.input}
-            placeholder="you@example.com"
-          />
-        </div>
+        {!isConfirmation && (
+          <div className="mb-4">
+            <label htmlFor="email" className="text-2xl mr-2">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              required
+              className={theme.input}
+              placeholder="you@example.com"
+            />
+          </div>
+        )}
         
         <div className="mb-4">
           <label htmlFor="password" className="text-2xl mr-2">
@@ -150,7 +154,7 @@ const LoginPage = () => {
               type="password"
               name="passwordConfirmation"
               required
-              className="w-full px-2 py-1 border border-black bg-white"
+              className={theme.input}
               placeholder="••••••••"
             />
           </div>

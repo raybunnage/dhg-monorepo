@@ -56,6 +56,12 @@ show_app_tree() {
 show_backend() {
     print_color $YELLOW "\n🔧 backend"
     
+    # Show scripts
+    if [ -d "backend/scripts" ]; then
+        print_color $BLUE "├── scripts"
+        find "backend/scripts" -type f -name "*.sh" | sed 's|.*/||' | sort | sed 's/^/│   ├── /'
+    fi
+    
     # Show core
     if [ -d "backend/core" ]; then
         print_color $BLUE "├── core"
@@ -131,6 +137,12 @@ show_backend() {
 # Main execution
 print_color $YELLOW "🌳 DHG Monorepo Structure"
 print_color $YELLOW "========================="
+
+# Show root scripts
+if [ -d "scripts" ]; then
+    print_color $YELLOW "\n📜 Root Scripts"
+    find "scripts" -type f -name "*.sh" | sed 's|.*/||' | sort | sed 's/^/├── /'
+fi
 
 # Show apps
 print_color $YELLOW "\n📱 apps"
