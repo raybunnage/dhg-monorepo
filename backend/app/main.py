@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Response, APIRouter, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from .auth import AuthService, LoginCredentials, SignupCredentials
+from .auth import AuthService, LoginCredentials, SignupCredentials, SetPasswordRequest
 from .supabase_client import supabase
 from .config import get_settings
+from supabase import create_client
 
 # Create auth router
 auth_router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -43,11 +44,8 @@ async def signup(credentials: SignupCredentials):
 async def list_users():
     try:
         settings = get_settings()
-        # Create admin client with service role key
-        from supabase import create_client
         admin_client = create_client(
-            settings.supabase_url,
-            settings.supabase_service_role_key
+            settings.supabase_url, settings.supabase_service_role_key
         )
         users = admin_client.auth.admin.list_users()
         print("Current users:", users)
@@ -55,6 +53,29 @@ async def list_users():
     except Exception as e:
         print(f"Error listing users: {e}")
         return {"error": str(e)}
+
+
+@auth_router.get("/debug/invite-token/{email}")
+async def get_invite_token(email: str):
+    try:
+        settings = get_settings()
+        admin_client = create_client(
+            settings.supabase_url, settings.supabase_service_role_key
+        )
+        # Generate invite link for testing
+        result = admin_client.auth.admin.invite_user(
+            email=email, data={"testing": True}
+        )
+        print(f"Generated invite token for {email}")
+        return {"token": result.token}
+    except Exception as e:
+        print(f"Error generating token: {e}")
+        return {"error": str(e)}
+
+
+@auth_router.post("/set-password")
+async def set_password(request: SetPasswordRequest):
+    return await AuthService.set_password(request)
 
 
 # Main app

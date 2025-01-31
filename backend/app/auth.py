@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 from .supabase_client import supabase
 from pydantic import BaseModel, EmailStr
 from typing import Optional
@@ -21,6 +21,11 @@ class SignupCredentials(BaseModel):
     email: EmailStr
     password: str
     password_confirmation: str
+
+
+class SetPasswordRequest(BaseModel):
+    token: str
+    password: str
 
 
 class AuthService:
@@ -181,3 +186,29 @@ class AuthService:
             raise HTTPException(
                 status_code=400, detail="Signup failed. Please try again."
             )
+
+    @staticmethod
+    async def set_password(request: SetPasswordRequest) -> dict:
+        try:
+            print(f"Attempting to set password with token: {request.token[:10]}...")
+            # Create admin client with service role key
+            settings = get_settings()
+            admin_client = create_client(
+                settings.supabase_url, settings.supabase_service_role_key
+            )
+
+            # Verify the token and set the password
+            result = admin_client.auth.admin.update_user_by_id(
+                request.token,  # This is actually the user ID
+                {"password": request.password},
+            )
+            print("Supabase response:", result)
+
+            if not result.user:
+                print("No user returned from Supabase")
+                raise HTTPException(status_code=400, detail="Invalid token")
+
+            return {"message": "Password set successfully"}
+        except Exception as e:
+            print(f"Error setting password: {str(e)}")
+            raise HTTPException(status_code=400, detail=str(e))

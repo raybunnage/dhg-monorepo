@@ -25,10 +25,17 @@ const LoginPage = () => {
   React.useEffect(() => {
     // Check if this is a signup confirmation
     const token = searchParams.get('token');
+    const type = searchParams.get('type');
     
     if (token) {
       setIsConfirmation(true);
       setIsSignup(true);
+      
+      // If this is an invite flow, we'll handle it differently
+      if (type === 'invite') {
+        setIsConfirmation(true);
+        setIsSignup(false); // Not a regular signup
+      }
     }
   }, [searchParams]);
 
@@ -40,6 +47,39 @@ const LoginPage = () => {
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+
+    // Handle first-time password setup
+    if (isConfirmation) {
+      try {
+        console.log('Setting password with token:', searchParams.get('token'));
+        const response = await fetch(`${API_URL}/api/auth/set-password`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            token: searchParams.get('token'),
+            password: password
+          })
+        });
+        
+        const data = await response.json();
+        console.log('Set password response:', data);
+        
+        if (!response.ok) {
+          throw new Error(data.detail || 'Failed to set password');
+        }
+        
+        navigate('/dashboard');
+      } catch (err) {
+        console.error('Password setup error:', err);
+        setError(err instanceof Error ? err.message : 'Failed to set password');
+      }
+      setIsLoading(false);
+      return;
+    }
 
     if (isSignup) {
       try {
