@@ -178,8 +178,72 @@ app.add_middleware(
    - Returns 401 error
    - Frontend displays error message
 
+## Testing Invite Flow
+1. Get invite token:
+   ```bash
+   curl http://localhost:8000/api/auth/debug/invite-token/user@example.com
+   ```
+2. Use token in URL:
+   ```
+   http://localhost:5177/login?token={USER_ID}&type=invite
+   ```
+3. Verify:
+   - Password setup screen appears
+   - Can set new password
+   - Redirects to dashboard after success
+
 ## Important Notes
 - CORS must be configured before routes
 - Cookie settings are critical for auth persistence
 - Frontend uses environment variables for API and Supabase config
 - Error handling includes both frontend and backend validation 
+
+## Using ngrok for Development
+
+### What is ngrok?
+ngrok is a tool that creates a secure tunnel to expose your local development server to the internet. This is essential for:
+- Testing email verification flows
+- Testing invite links
+- Simulating how your app behaves in production
+- Testing from different devices/networks
+
+### Setup and Usage
+1. Start your local servers:
+   ```bash
+   # Terminal 1: Frontend (localhost:5177)
+   pnpm dev
+
+   # Terminal 2: Backend (localhost:8000)
+   uvicorn app.main:app --reload
+   ```
+
+2. Start ngrok tunnel:
+   ```bash
+   # Terminal 3: Creates public URL for frontend
+   ./scripts/ngrok.sh http 5177
+   ```
+
+### Testing Different Flows
+1. Regular Login/Signup:
+   - Use the ngrok URL directly (e.g., https://your-ngrok-url.ngrok-free.app)
+   - Works same as localhost
+
+2. Email Verification:
+   - Sign up with email on ngrok URL
+   - Click verification link in email
+   - Link will go through ngrok to your local server
+
+3. First-time Password Setup:
+   - More complex because it involves multiple steps:
+     1. User gets invite email
+     2. Clicks link that goes to ngrok URL
+     3. Sets password through ngrok tunnel
+   - For testing, use debug endpoint with ngrok URL:
+     ```
+     https://your-ngrok-url.ngrok-free.app/login?token={USER_ID}&type=invite
+     ```
+
+### Common Issues
+- CORS: Make sure ngrok domain is allowed in backend CORS config
+- Cookies: Some browsers block third-party cookies from ngrok domains
+- Timeouts: ngrok free tier has connection limits 
