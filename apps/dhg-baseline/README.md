@@ -48,3 +48,14 @@ export default tseslint.config({
   },
 })
 ```
+
+# Auth Flows
+
+## URL Patterns
+- `/login` - Standard login
+- `/login?type=invite&token={TOKEN}` - First-time password setup
+- `/login?type=recovery&token={TOKEN}` - Password reset
+- `/login?type=signup&token={TOKEN}` - Email verification
+
+## Protected Routes
+- `/dashboard` - Requires authentication

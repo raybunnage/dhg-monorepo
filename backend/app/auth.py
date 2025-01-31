@@ -28,56 +28,86 @@ class SetPasswordRequest(BaseModel):
     password: str
 
 
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+
+
 class AuthService:
     @staticmethod
     async def login(credentials: LoginCredentials) -> AuthResponse:
         try:
             print(
-                "Login attempt with:",
+                "🔑 Login attempt with:",
                 {
                     "email": credentials.email,
-                    "supabase_url": supabase.supabase_url[:30]
-                    + "...",  # Truncate for security
+                    "password_length": len(credentials.password),
+                    "supabase_url": supabase.supabase_url[:30] + "...",
                     "has_key": bool(supabase.supabase_key),
                 },
             )
 
-            # Validate credentials before attempting login
+            # Validate credentials
             if not credentials.email or not credentials.password:
+                print("❌ Missing email or password")
                 raise HTTPException(
                     status_code=400, detail="Email and password required"
                 )
 
             try:
-                print("Attempting Supabase login...")
+                print("📡 Attempting Supabase login...")
                 auth_response = supabase.auth.sign_in_with_password(
                     {"email": credentials.email, "password": credentials.password}
                 )
                 print(
-                    "Supabase response received:",
+                    "📥 Supabase login response:",
                     {
                         "has_user": bool(auth_response.user),
                         "has_session": bool(auth_response.session),
+                        "error": getattr(auth_response, "error", None),
                     },
                 )
 
                 if not auth_response.user:
+                    print("❌ No user returned from Supabase")
                     raise HTTPException(status_code=401, detail="Invalid credentials")
 
+                print("✅ Login successful")
+                # Debug the session structure
+                print(
+                    "Session data:",
+                    {
+                        "raw": auth_response.session,
+                        "keys": auth_response.session.__dict__
+                        if auth_response.session
+                        else None,
+                    },
+                )
+
+                # Convert to dict safely
+                user_dict = dict(auth_response.user)
+                session_dict = (
+                    {
+                        "access_token": auth_response.session.access_token,
+                        "refresh_token": auth_response.session.refresh_token,
+                        "expires_at": auth_response.session.expires_at,
+                    }
+                    if auth_response.session
+                    else None
+                )
+
                 return AuthResponse(
-                    user=auth_response.user,
-                    session=auth_response.session,
+                    user=user_dict,
+                    session=session_dict,
                     message="Login successful",
                 )
             except Exception as supabase_error:
-                print(f"Supabase auth error details: {str(supabase_error)}")
+                print(f"🚨 Supabase auth error: {str(supabase_error)}")
                 raise HTTPException(
                     status_code=401,
                     detail="Authentication failed. Please check your credentials.",
                 )
         except Exception as e:
-            # Log the error here (but don't expose internal details)
-            print(f"Login error: {str(e)}")  # Replace with proper logging
+            print(f"🚨 Login error: {str(e)}")
             raise HTTPException(
                 status_code=401,
                 detail="Authentication failed. Please check your credentials.",
@@ -110,7 +140,12 @@ class AuthService:
 
     @staticmethod
     async def signup(credentials: SignupCredentials) -> AuthResponse:
-        print(f"Starting signup process for email: {credentials.email}")
+        print(f"🔐 Starting signup process for email: {credentials.email}")
+        print(f"🔑 Using Supabase URL: {supabase.supabase_url}")
+        print(
+            f"🔑 Has service role key: {bool(get_settings().supabase_service_role_key)}"
+        )
+
         # Validate passwords match
         if credentials.password != credentials.password_confirmation:
             print("Password mismatch during signup")
@@ -124,8 +159,7 @@ class AuthService:
             )
 
         try:
-            print("Attempting Supabase signup with admin client...")
-            # Create admin client with service role key
+            print("📡 Attempting Supabase signup with admin client...")
             settings = get_settings()
             admin_client = create_client(
                 settings.supabase_url, settings.supabase_service_role_key
@@ -135,7 +169,7 @@ class AuthService:
                 {"email": credentials.email, "password": credentials.password}
             )
             print(
-                "Supabase signup response received:",
+                "📥 Supabase signup response:",
                 {
                     "has_user": bool(auth_response.user),
                     "has_session": bool(auth_response.session),
@@ -161,7 +195,11 @@ class AuthService:
             )
 
         except Exception as e:
-            print(f"Signup error: {str(e)}")
+            print(f"❌ Signup error: {str(e)}")
+            print(f"❌ Error type: {type(e)}")
+            print(
+                f"❌ Error details: {e.__dict__ if hasattr(e, '__dict__') else 'No details'}"
+            )
             error_msg = str(e).lower()
             if "user already registered" in error_msg:
                 raise HTTPException(status_code=400, detail="Email already registered")
@@ -211,4 +249,45 @@ class AuthService:
             return {"message": "Password set successfully"}
         except Exception as e:
             print(f"Error setting password: {str(e)}")
+            raise HTTPException(status_code=400, detail=str(e))
+
+    @staticmethod
+    async def request_reset_password(request: ResetPasswordRequest) -> dict:
+        """Request a password reset email from Supabase"""
+        try:
+            print(f"Requesting password reset for: {request.email}")
+            result = supabase.auth.reset_password_email(email=request.email)
+            print("Password reset email requested successfully")
+            return {
+                "message": "If an account exists with this email, "
+                "you will receive a password reset link"
+            }
+        except Exception as e:
+            print(f"Error requesting password reset: {e}")
+            # Return same message even if email doesn't exist (security best practice)
+            return {
+                "message": "If an account exists with this email, "
+                "you will receive a password reset link"
+            }
+
+    @staticmethod
+    async def verify_email(token: str) -> dict:
+        """Verify email with token from URL"""
+        try:
+            print(f"Verifying email with token: {token[:10]}...")
+            result = supabase.auth.verify_email(token)
+            return {"message": "Email verified successfully"}
+        except Exception as e:
+            print(f"Error verifying email: {e}")
+            raise HTTPException(status_code=400, detail=str(e))
+
+    @staticmethod
+    async def handle_auth_callback(params: dict) -> dict:
+        """Handle OAuth callback"""
+        try:
+            print("Processing auth callback...")
+            session = supabase.auth.get_session_from_url(params)
+            return {"session": session, "message": "Authentication successful"}
+        except Exception as e:
+            print(f"Error handling callback: {e}")
             raise HTTPException(status_code=400, detail=str(e))

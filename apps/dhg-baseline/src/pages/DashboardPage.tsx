@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { HiUsers, HiDocumentText, HiChartBar, HiClock } from 'react-icons/hi';
@@ -5,6 +6,14 @@ import { HiUsers, HiDocumentText, HiChartBar, HiClock } from 'react-icons/hi';
 const DashboardPage = () => {
   const { toggleLogin, isLoggedIn } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log('🔒 Dashboard access check:', { isLoggedIn });
+    if (!isLoggedIn) {
+      console.log('⚠️ Unauthorized access attempt, redirecting to login');
+      navigate('/login');
+    }
+  }, [isLoggedIn, navigate]);
 
   // Ocean Blue theme colors
   const theme = {
