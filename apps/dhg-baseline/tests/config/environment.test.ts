@@ -10,7 +10,7 @@ describe('Environment Config', () => {
 
   it('should have correct default values', () => {
     const config = getConfig();
-    expect(config.api.baseUrl).toBe('http://localhost:3000');
+    expect(config.api.baseUrl).toBe('http://localhost:8000');
     expect(config.api.timeout).toBe(5000);
   });
 

@@ -141,7 +141,12 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-96">
+      <form 
+        onSubmit={handleSubmit} 
+        className="bg-white p-8 rounded-lg shadow-md w-96"
+        role="form"
+        aria-label="Login Form"
+      >
         <h1 className="text-2xl mb-6 text-center">
           {isConfirmation
             ? 'Set Your Password'
