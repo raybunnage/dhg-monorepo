@@ -40,14 +40,28 @@ const LoginPage = () => {
     const errorCode = hashParams.get('error_code');
     const errorDescription = hashParams.get('error_description');
 
+    // Extract token from either query params or hash
+    const accessToken = hashParams.get('access_token');
+    const queryToken = searchParams.get('token');
+    const effectiveToken = queryToken || accessToken;
+    const emailParam = searchParams.get('email');
+    const storedEmail = localStorage.getItem('recoveryEmail');
+    const effectiveEmail = emailParam || storedEmail;
+
+    console.log('🔄 Auth flow check:', { 
+      type,
+      token: effectiveToken,
+      email: effectiveEmail,
+      allParams,
+      hashParams: Object.fromEntries(hashParams.entries()),
+      accessToken: accessToken?.slice(0, 10) + '...',
+      queryToken: queryToken?.slice(0, 10) + '...',
+      currentUrl: window.location.href
+    });
+
     // Check if this is a recovery flow
     const isRecoveryFlow = type === 'recovery';
-    console.log('🔄 Recovery flow check:', { 
-      type,
-      token,
-      isRecoveryFlow,
-      currentUrl: window.location.href 
-    });
+    const recoveryToken = token || searchParams.get('token');
 
     console.log('🔍 URL Parameters:', { 
       allParams,
@@ -78,7 +92,7 @@ const LoginPage = () => {
 
     console.log('🔑 Auth flow:', { 
       type, 
-      hasToken: !!token,
+      hasToken: !!effectiveToken,
       isConfirmation,
       isSignup,
       isResetPassword,
@@ -90,29 +104,38 @@ const LoginPage = () => {
       }
     });
 
-    if (token) {
-      console.log('🎫 Token found:', token.slice(0, 10) + '...');
+    if (effectiveToken) {
+      console.log('🎫 Token found:', effectiveToken.slice(0, 10) + '...');
       switch (type) {
         case 'invite':
           setIsConfirmation(true);
           setIsSignup(false);
-          console.log('👋 Invite flow:', { token: token.slice(0, 10) + '...' });
+          console.log('👋 Invite flow:', { token: effectiveToken.slice(0, 10) + '...' });
           break;
         case 'recovery':
           console.log('🔄 Starting recovery flow with token');
           setIsConfirmation(true);
           setIsResetPassword(true);
           setIsSignup(false);
-          console.log('🔄 Recovery state set:', {
-            isConfirmation: true,
-            isResetPassword: true,
-            isSignup: false
-          });
+          if (effectiveEmail) {
+            localStorage.setItem('recoveryEmail', effectiveEmail);
+            console.log('📧 Using recovery email:', effectiveEmail);
+          }
+          // If we got a hash token, convert it to query param
+          if (accessToken && !queryToken) {
+            const newParams = new URLSearchParams(searchParams);
+            newParams.set('token', accessToken);
+            window.history.replaceState(
+              {},
+              '',
+              `${window.location.pathname}?${newParams.toString()}`
+            );
+          }
           break;
         case 'signup':
           setIsConfirmation(true);
           setIsSignup(true);
-          console.log('📝 Signup verification:', { token: token.slice(0, 10) + '...' });
+          console.log('📝 Signup verification:', { token: effectiveToken.slice(0, 10) + '...' });
           break;
         default:
           console.log('⚠️ Unknown type with token:', type);
@@ -120,10 +143,12 @@ const LoginPage = () => {
           setIsResetPassword(false);
           setIsSignup(false);
       }
-    } else if (isRecoveryFlow) {
-      // Handle recovery without token (initial reset request)
-      console.log('🔄 Starting password reset request flow');
-      setIsResetPassword(true);
+    } else {
+      console.log('🔒 No token found, type:', type);
+      setIsConfirmation(false);
+      if (type !== 'recovery') {
+        setIsResetPassword(false);
+      }
       setIsSignup(false);
     }
   }, [type, token, searchParams]);
@@ -277,53 +302,31 @@ const LoginPage = () => {
   const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    setSuccessMessage(null);
     setIsLoading(true);
-    
+
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
 
-    // Basic email validation
-    if (!email || !email.includes('@')) {
-      setError({ email: 'Please enter a valid email address' });
-      setIsLoading(false);
-      return;
-    }
+    console.log('📧 Requesting reset for:', email);
 
     try {
       const response = await fetch(`${API_URL}/api/auth/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
         },
         body: JSON.stringify({ email })
       });
 
-      const data = await response.json();
-      
       if (response.ok) {
         setSuccessMessage('If an account exists with this email, you will receive a password reset link');
-        setIsResetPassword(false);
+        console.log('✅ Reset email requested');
       } else {
-        // Handle specific error cases
-        switch (response.status) {
-          case 429:
-            throw new Error('Too many reset attempts. Please try again later.');
-          case 400:
-            if (data.detail?.includes('email')) {
-              setError({ email: data.detail });
-            } else {
-              throw new Error(data.detail || 'Invalid request');
-            }
-            break;
-          default:
-            throw new Error('Failed to request password reset');
-        }
+        const error = await response.json();
+        setError(error.detail || 'Failed to request password reset');
       }
     } catch (error) {
-      console.error('🚨 Reset password error:', error);
-      setError(error instanceof Error ? error.message : 'Failed to request password reset');
+      setError('Failed to connect to server');
     } finally {
       setIsLoading(false);
     }
@@ -335,8 +338,13 @@ const LoginPage = () => {
     setIsLoading(true);
 
     // Get the token from URL params
-    const urlToken = searchParams.get('token');
-    console.log('🔑 Reset token from URL:', urlToken);
+    const urlToken = searchParams.get('token') || token;
+    const recoveryEmail = localStorage.getItem('recoveryEmail');
+    console.log('🔑 Reset attempt:', {
+      token: urlToken?.slice(0, 10) + '...',
+      email: recoveryEmail,
+      hasPassword: true
+    });
 
     const formData = new FormData(e.currentTarget);
     const password = formData.get('password') as string;
@@ -344,6 +352,12 @@ const LoginPage = () => {
 
     if (!urlToken) {
       setError('Missing reset token');
+      setIsLoading(false);
+      return;
+    }
+
+    if (password !== passwordConfirmation) {
+      setError('Passwords do not match');
       setIsLoading(false);
       return;
     }
@@ -356,7 +370,8 @@ const LoginPage = () => {
         },
         body: JSON.stringify({ 
           token: urlToken,
-          password 
+          password,
+          email: recoveryEmail
         })
       });
 
@@ -383,6 +398,28 @@ const LoginPage = () => {
     }
   };
 
+  // Add debug display
+  const DebugInfo = () => {
+    if (!import.meta.env.DEV) return null;
+    
+    return (
+      <div className="fixed bottom-4 right-4 bg-gray-800 text-white p-4 rounded text-xs">
+        <pre>
+          {JSON.stringify({
+            type,
+            token: token?.slice(0, 10) + '...',
+            email: searchParams.get('email'),
+            isConfirmation,
+            isResetPassword,
+            isSignup,
+            recoveryEmail: localStorage.getItem('recoveryEmail'),
+            currentUrl: window.location.href
+          }, null, 2)}
+        </pre>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="bg-white p-8 rounded shadow-md w-96">
@@ -395,14 +432,12 @@ const LoginPage = () => {
                 onClick={() => {
                   const searchParams = new URLSearchParams(window.location.search);
                   searchParams.set('type', 'recovery');
-                  // For testing, we'll simulate the initial reset request
-                  // The token will come from the email link
+                  searchParams.set('email', 'bunnage.ray+test2@gmail.com');
                   window.history.pushState(
                     {},
                     '',
                     `${window.location.pathname}?${searchParams.toString()}`
                   );
-                  // Force re-render
                   window.location.reload();
                 }}
                 className="bg-blue-500 text-white px-2 py-1 rounded text-xs"
@@ -628,6 +663,7 @@ const LoginPage = () => {
           </div>
         )}
       </div>
+      <DebugInfo />
     </div>
   );
 };

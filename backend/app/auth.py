@@ -248,26 +248,19 @@ class AuthService:
 
             print(f"Attempting to set password with token: {cleaned_token[:10]}...")
 
-            # Use admin client with service role key for password reset
             settings = get_settings()
             admin_client = create_client(
                 settings.supabase_url, settings.supabase_service_role_key
             )
 
-            try:
-                response = admin_client.auth.admin.update_user_by_id(
-                    cleaned_token, {"password": request.password}
-                )
-                print("✅ Password update response:", response)
-                return {"message": "Password updated successfully"}
-            except Exception as e:
-                print(f"🚨 Error setting password: {str(e)}")
-                raise HTTPException(status_code=400, detail=str(e))
-        except HTTPException:
-            raise
+            response = admin_client.auth.admin.update_user_by_id(
+                cleaned_token, {"password": request.password}
+            )
+            print("✅ Password update response:", response)
+            return {"message": "Password updated successfully"}
         except Exception as e:
-            print(f"Unexpected error: {str(e)}")
-            raise HTTPException(status_code=500, detail="Internal server error")
+            print(f"🚨 Error setting password: {str(e)}")
+            raise HTTPException(status_code=400, detail=str(e))
 
     @staticmethod
     def is_valid_uuid(uuid_string: str) -> bool:
@@ -281,6 +274,7 @@ class AuthService:
     async def request_reset_password(request: ResetPasswordRequest) -> dict:
         try:
             print("🔄 Requesting password reset for:", request.email)
+
             reset_options = {
                 "redirect_to": "http://localhost:5177/login",
                 "email_template": {"linktype": "recovery"},
@@ -290,14 +284,10 @@ class AuthService:
             auth_response = supabase.auth.reset_password_email(
                 email=request.email, options=reset_options
             )
-            # Log the full URL structure that Supabase will use
+
             print(
-                "🔗 Expected reset URL structure:",
-                {
-                    "base": "http://localhost:5177/login",
-                    "params": "?type=recovery&token=[TOKEN]",
-                    "full_example": "http://localhost:5177/login?type=recovery&token=xxx",
-                },
+                "📨 Reset email status:",
+                {"email": request.email, "sent": bool(auth_response)},
             )
 
             return {
