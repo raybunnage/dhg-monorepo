@@ -1,0 +1,55 @@
+{
+  "rules": [
+    {
+      "name": "auth-service-changes",
+      "description": "Rules for modifying AuthService code",
+      "pattern": {
+        "include": ["backend/app/auth.py"],
+        "methods": ["AuthService"]
+      },
+      "requirements": {
+        "documentation": {
+          "required": true,
+          "location": "docs/auth/changes/",
+          "template": "template.md"
+        },
+        "testing": {
+          "preChange": [
+            "Document current behavior",
+            "Test all existing flows",
+            "Capture response formats"
+          ],
+          "duringChange": [
+            "Make one change at a time",
+            "Test after each modification",
+            "Keep original code in comments"
+          ],
+          "postChange": [
+            "Verify all auth flows",
+            "Check error handling",
+            "Test edge cases"
+          ]
+        },
+        "rollback": {
+          "required": true,
+          "steps": [
+            "Document original code",
+            "Plan reversion steps",
+            "Test rollback procedure"
+          ]
+        }
+      },
+      "warnings": [
+        "Changes to AuthService can break critical functionality",
+        "Always preserve existing auth flows",
+        "Test thoroughly before committing"
+      ],
+      "bestPractices": [
+        "Make incremental changes only",
+        "Document each step",
+        "Keep rollback plans ready",
+        "Test existing functionality first"
+      ]
+    }
+  ]
+} 

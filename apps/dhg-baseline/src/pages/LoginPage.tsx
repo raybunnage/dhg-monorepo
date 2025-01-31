@@ -45,32 +45,39 @@ const LoginPage = () => {
     const queryToken = searchParams.get('token');
     const effectiveToken = queryToken || accessToken;
     const emailParam = searchParams.get('email');
-    const storedEmail = localStorage.getItem('recoveryEmail');
-    const effectiveEmail = emailParam || storedEmail;
 
     console.log('🔄 Auth flow check:', { 
       type,
       token: effectiveToken,
-      email: effectiveEmail,
+      email: emailParam,
       allParams,
       hashParams: Object.fromEntries(hashParams.entries()),
-      accessToken: accessToken?.slice(0, 10) + '...',
-      queryToken: queryToken?.slice(0, 10) + '...',
       currentUrl: window.location.href
     });
 
-    // Check if this is a recovery flow
-    const isRecoveryFlow = type === 'recovery';
-    const recoveryToken = token || searchParams.get('token');
+    // Handle recovery flow
+    if (type === 'recovery') {
+      console.log('📧 Setting up recovery flow');
+      setIsConfirmation(true);
+      setIsResetPassword(true);
+      setIsSignup(false);
+      
+      if (emailParam) {
+        localStorage.setItem('recoveryEmail', emailParam);
+        console.log('📧 Stored recovery email:', emailParam);
+      }
+    }
 
-    console.log('🔍 URL Parameters:', { 
-      allParams,
-      type,
-      token,
-      hashError: errorCode,
-      hashErrorDescription: errorDescription,
-      currentUrl: window.location.href
-    });
+    // Handle access token if present
+    if (accessToken) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('token', accessToken);
+      window.history.replaceState(
+        {},
+        '',
+        `${window.location.pathname}?${newParams.toString()}`
+      );
+    }
 
     // Handle error cases from hash
     if (errorCode) {
@@ -117,9 +124,9 @@ const LoginPage = () => {
           setIsConfirmation(true);
           setIsResetPassword(true);
           setIsSignup(false);
-          if (effectiveEmail) {
-            localStorage.setItem('recoveryEmail', effectiveEmail);
-            console.log('📧 Using recovery email:', effectiveEmail);
+          if (emailParam) {
+            localStorage.setItem('recoveryEmail', emailParam);
+            console.log('📧 Using recovery email:', emailParam);
           }
           // If we got a hash token, convert it to query param
           if (accessToken && !queryToken) {
@@ -151,7 +158,7 @@ const LoginPage = () => {
       }
       setIsSignup(false);
     }
-  }, [type, token, searchParams]);
+  }, [searchParams, type]);
 
   // Debug render states
   React.useEffect(() => {

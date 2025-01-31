@@ -242,6 +242,21 @@ class AuthService:
             if "#" in cleaned_token:
                 cleaned_token = cleaned_token.split("#")[0]
 
+            # Handle Supabase JWT access tokens
+            if cleaned_token.startswith("ey"):  # JWT format
+                try:
+                    settings = get_settings()
+                    admin_client = create_client(
+                        settings.supabase_url, settings.supabase_service_role_key
+                    )
+                    user = admin_client.auth.get_user(cleaned_token)
+                    if user and user.user:
+                        cleaned_token = user.user.id
+                        print("✅ Extracted user ID from JWT:", cleaned_token)
+                except Exception as e:
+                    print("❌ Failed to get user from JWT:", str(e))
+                    raise HTTPException(status_code=400, detail="Invalid token")
+
             if not AuthService.is_valid_uuid(cleaned_token):
                 print("❌ Invalid token format:", cleaned_token[:10] + "...")
                 raise HTTPException(status_code=400, detail="Invalid token format")
