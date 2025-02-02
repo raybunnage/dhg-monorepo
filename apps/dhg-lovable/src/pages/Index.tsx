@@ -52,35 +52,35 @@ const Index = () => {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6 mt-8">
+      <div className="grid gap-6 md:grid-cols-3">
         <Card className="border-primary/20 hover:border-primary/40 transition-colors">
           <CardHeader>
             <CardTitle className="text-primary">Research Focus</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Exploring chronic disease through the lens of the autonomic nervous system, with special emphasis on The Polyvagal Theory and neurophysiological responses.
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-secondary/20 hover:border-secondary/40 transition-colors">
+        <Card className="border-primary/20 hover:border-primary/40 transition-colors">
           <CardHeader>
-            <CardTitle className="text-secondary">Collaborative Approach</CardTitle>
+            <CardTitle className="text-primary">Collaborative Approach</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Scientists, researchers, and healthcare clinicians sharing insights on neurophysiological foundations of chronic mental and physical disease.
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-accent/20 hover:border-accent/40 transition-colors">
+        <Card className="border-primary/20 hover:border-primary/40 transition-colors">
           <CardHeader>
-            <CardTitle className="text-accent">Key Themes</CardTitle>
+            <CardTitle className="text-primary">Key Themes</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="text-gray-600 text-left list-disc pl-4 space-y-1">
+            <ul className="list-disc list-inside text-muted-foreground space-y-2">
               <li>Autonomic nervous system's role</li>
               <li>Cytokine and metabolic factors</li>
               <li>Vagal nerve stimulation</li>
