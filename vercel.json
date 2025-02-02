@@ -11,7 +11,8 @@
     },
     "apps/dhg-lovable": {
       "root": "apps/dhg-lovable",
-      "sourceRoot": "apps/dhg-lovable"
+      "sourceRoot": "apps/dhg-lovable",
+      "projectFile": "apps/dhg-lovable/vercel.project.json"
     },
     "apps/dhg-test": {
       "root": "apps/dhg-test"

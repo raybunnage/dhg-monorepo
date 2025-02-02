@@ -1,0 +1,8 @@
+{
+  "name": "dhg-lovable",
+  "framework": "vite",
+  "buildCommand": "cd ../.. && pnpm install && pnpm --filter dhg-lovable build",
+  "outputDirectory": "dist",
+  "installCommand": "pnpm install",
+  "devCommand": "pnpm dev"
+} 
