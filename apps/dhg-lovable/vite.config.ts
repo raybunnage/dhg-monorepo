@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react-swc'
-import { resolve } from 'path'
+import path from 'path'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       port: 5179,
-      host: true,
+      host: '0.0.0.0',
       proxy: {
         '/api': {
           target: 'http://localhost:8000',
@@ -23,13 +23,15 @@ export default defineConfig(({ mode }) => {
       },
       allowedHosts: [
         'localhost',
+        '10.0.0.177',
         '.ngrok-free.app',
         '.ngrok.io'
       ],
+      strictPort: false,
     },
     resolve: {
       alias: {
-        '@': resolve(__dirname, './src'),
+        '@': path.resolve(__dirname, './src'),
       },
     },
     build: {

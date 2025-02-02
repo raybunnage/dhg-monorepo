@@ -3,7 +3,10 @@
   "private": true,
   "packageManager": "pnpm@9.15.3",
   "scripts": {
-    "dev": "turbo run dev",
+    "dev:lovable": "pnpm --filter dhg-lovable dev",
+    "dev:baseline": "kill-port 5177 && pnpm --filter dhg-baseline dev",
+    "dev:test": "kill-port 5178 && pnpm --filter dhg-test dev",
+    "dev": "kill-port 5177 5178 5179 && pnpm -r --parallel run dev",
     "frontend": "./scripts/start-frontend.sh",
     "build": "pnpm --filter './apps/*' build",
     "lint": "turbo run lint",
@@ -17,6 +20,7 @@
   },
   "devDependencies": {
     "@vercel/node": "^5.0.2",
-    "turbo": "latest"
+    "turbo": "latest",
+    "kill-port": "^2.0.1"
   }
 }

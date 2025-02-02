@@ -1,14 +1,19 @@
+import { ReactNode } from "react";
 import { Header } from "./Header";
 
 interface MainLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
       <Header />
-      <main className="container mx-auto px-4 py-8">{children}</main>
+      <div className="max-w-7xl mx-auto">
+        <div className="p-4 md:p-8">
+          {children}
+        </div>
+      </div>
     </div>
   );
 };
