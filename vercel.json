@@ -1,13 +1,19 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "buildCommand": "pnpm build",
-  "outputDirectory": "apps/dhg-baseline/dist",
+  "buildCommand": "cd ../.. && pnpm install && pnpm build",
+  "outputDirectory": "dist",
   "installCommand": "pnpm install",
   "framework": null,
   "workspaces": {
     "apps/dhg-baseline": {
       "root": "apps/dhg-baseline"
+    },
+    "apps/dhg-lovable": {
+      "root": "apps/dhg-lovable"
+    },
+    "apps/dhg-test": {
+      "root": "apps/dhg-test"
     }
   },
   "functions": {
@@ -23,8 +29,16 @@
       "dest": "backend/core/app.py"
     },
     {
-      "src": "/(.*)",
+      "src": "/baseline/(.*)",
       "dest": "apps/dhg-baseline/dist/$1"
+    },
+    {
+      "src": "/lovable/(.*)",
+      "dest": "apps/dhg-lovable/dist/$1"
+    },
+    {
+      "src": "/test/(.*)",
+      "dest": "apps/dhg-test/dist/$1"
     }
   ],
   "env": {
