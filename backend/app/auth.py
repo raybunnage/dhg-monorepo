@@ -290,14 +290,19 @@ class AuthService:
         try:
             print("🔄 Requesting password reset for:", request.email)
 
-            reset_options = {
-                "redirect_to": "http://localhost:5177/login",
-                "email_template": {"linktype": "recovery"},
-            }
-            print("📧 Reset options:", reset_options)
+            # Check rate limit in Redis or similar (pseudo-code)
+            # rate_limit_key = f"reset_password:{request.email}"
+            # if rate_limit_exceeded(rate_limit_key):
+            #     raise HTTPException(
+            #         status_code=400,
+            #         detail="Email rate limit exceeded. Please wait before trying again."
+            #     )
 
-            auth_response = supabase.auth.reset_password_email(
-                email=request.email, options=reset_options
+            settings = get_settings()
+            client = create_client(settings.supabase_url, settings.supabase_anon_key)
+
+            auth_response = client.auth.reset_password_email(
+                request.email,
             )
 
             print(
@@ -305,12 +310,19 @@ class AuthService:
                 {"email": request.email, "sent": bool(auth_response)},
             )
 
+            # Set rate limit after successful send
+            # set_rate_limit(rate_limit_key, expiry=300)  # 5 minutes
+
             return {
                 "message": "If an account exists with this email, you will receive a password reset link"
             }
         except Exception as e:
-            print(f"🚨 Reset password error: {str(e)}")
-            print(f"🚨 Error type: {type(e)}")
+            print("❌ Reset password error:", str(e))
+            if "rate limit" in str(e).lower():
+                raise HTTPException(
+                    status_code=400,
+                    detail="Email rate limit exceeded. Please wait before trying again.",
+                )
             raise HTTPException(status_code=400, detail=str(e))
 
     @staticmethod
