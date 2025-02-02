@@ -91,3 +91,9 @@ wheels/
 .ngrok/
 .ngrok.yml
 ngrok.yml
+
++ # Backups
++ .backups/
++ .backups/**/*
+**/backups/
+**/backups/**/*
