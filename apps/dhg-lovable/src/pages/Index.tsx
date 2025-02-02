@@ -5,6 +5,14 @@ import { Link } from "react-router-dom";
 import { CalendarDays, Users, BookOpen } from "lucide-react";
 
 const Index = () => {
+  // External links
+  const ZOOM_LINK = "https://us02web.zoom.us/j/98327644404";
+  const ARCHIVES_LINK = "https://drive.google.com/drive/folders/1wriOM2j2IglnMcejplqG_XcCxSIfoRMV?usp=sharing";
+
+  const handleExternalLink = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <MainLayout>
       <div className="max-w-4xl mx-auto text-center mb-12">
@@ -27,24 +35,31 @@ const Index = () => {
             <div className="flex flex-col items-center">
               <Users className="w-8 h-8 text-primary mb-2" />
               <h3 className="font-semibold mb-1">Join Us</h3>
-              <a href="https://us02web.zoom.us/j/98327644404" className="text-sm text-blue-600 hover:underline">
+              <Button 
+                variant="link" 
+                className="text-sm text-blue-600 hover:text-blue-800"
+                onClick={() => handleExternalLink(ZOOM_LINK)}
+              >
                 Zoom Meetings
-              </a>
+              </Button>
             </div>
             <div className="flex flex-col items-center">
               <BookOpen className="w-8 h-8 text-primary mb-2" />
               <h3 className="font-semibold mb-1">Past Recordings</h3>
-              <a href="https://drive.google.com/drive/folders/1wriOM2j2IglnMcejplqG_XcCxSIfoRMV?usp=sharing" 
-                 className="text-sm text-blue-600 hover:underline">
+              <Button 
+                variant="link" 
+                className="text-sm text-blue-600 hover:text-blue-800"
+                onClick={() => handleExternalLink(ARCHIVES_LINK)}
+              >
                 Access Archives
-              </a>
+              </Button>
             </div>
           </div>
         </div>
 
         <div className="flex gap-4 justify-center mb-12">
           <Button size="lg" className="bg-primary hover:bg-primary/90" asChild>
-            <Link to="/experts">View Our Experts</Link>
+            <Link to="/experts/">View Our Experts</Link>
           </Button>
           <Button size="lg" className="bg-secondary hover:bg-secondary/90" asChild>
             <Link to="/document-types">Browse Resources</Link>

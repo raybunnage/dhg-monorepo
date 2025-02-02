@@ -1,25 +1,26 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Index from "@/pages/Index";
+import Experts from "@/pages/Experts";
+import DocumentTypes from "@/pages/DocumentTypes";
 import NotFound from "@/pages/NotFound";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 
 function App() {
+  console.log("App rendering, available components:", {
+    Index: !!Index,
+    Experts: !!Experts,
+    DocumentTypes: !!DocumentTypes
+  });
+
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/login" element={
-          <div className="absolute top-4 right-4">
-            <Button asChild>
-              <Link to="/login">Login</Link>
-            </Button>
-          </div>
-        } />
+        <Route path="/experts" element={<Experts />} />
+        <Route path="/document-types" element={<DocumentTypes />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;

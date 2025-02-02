@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,42 +14,48 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+const expertSchema = z.object({
+  expert_name: z.string().min(2, "Expert name must be at least 2 characters"),
+  full_name: z.string().optional(),
+  expertise_area: z.string().optional(),
+  experience_years: z.coerce.number().min(0).optional(),
+  bio: z.string().optional(),
+  is_in_core_group: z.boolean().default(false),
+  starting_ref_id: z.coerce.number().optional(),
+});
+
+type ExpertFormValues = z.infer<typeof expertSchema>;
+
 interface ExpertFormProps {
   expert?: {
     id: string;
     expert_name: string;
     full_name: string | null;
-    email_address: string | null;
     expertise_area: string | null;
     experience_years: number | null;
+    bio: string | null;
+    is_in_core_group: boolean;
+    starting_ref_id: number | null;
   };
   onSuccess: () => void;
 }
 
-interface FormValues {
-  expert_name: string;
-  full_name: string;
-  email_address: string;
-  expertise_area: string;
-  experience_years: number;
-}
-
 export function ExpertForm({ expert, onSuccess }: ExpertFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-
-  const form = useForm<FormValues>({
+  const form = useForm<ExpertFormValues>({
+    resolver: zodResolver(expertSchema),
     defaultValues: {
       expert_name: expert?.expert_name || "",
       full_name: expert?.full_name || "",
-      email_address: expert?.email_address || "",
       expertise_area: expert?.expertise_area || "",
-      experience_years: expert?.experience_years || 0,
+      experience_years: expert?.experience_years || undefined,
+      bio: expert?.bio || "",
+      is_in_core_group: expert?.is_in_core_group || false,
+      starting_ref_id: expert?.starting_ref_id || undefined,
     },
   });
 
-  const onSubmit = async (data: FormValues) => {
-    setIsSubmitting(true);
+  async function onSubmit(data: ExpertFormValues) {
     try {
       if (expert) {
         const { error } = await supabase
@@ -61,15 +68,21 @@ export function ExpertForm({ expert, onSuccess }: ExpertFormProps) {
           description: "Expert updated successfully",
         });
       } else {
-        const { error } = await supabase.from("experts").insert([data]);
+        const { error } = await supabase
+          .from("experts")
+          .insert([{
+            ...data,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }]);
         if (error) throw error;
         toast({
           title: "Success",
           description: "Expert created successfully",
         });
       }
-      onSuccess();
       form.reset();
+      onSuccess();
     } catch (error) {
       console.error("Error saving expert:", error);
       toast({
@@ -77,10 +90,8 @@ export function ExpertForm({ expert, onSuccess }: ExpertFormProps) {
         description: "Failed to save expert",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
-  };
+  }
 
   return (
     <Form {...form}>
@@ -90,9 +101,9 @@ export function ExpertForm({ expert, onSuccess }: ExpertFormProps) {
           name="expert_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Expert Name *</FormLabel>
+              <FormLabel>Expert Name*</FormLabel>
               <FormControl>
-                <Input {...field} required />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -115,24 +126,10 @@ export function ExpertForm({ expert, onSuccess }: ExpertFormProps) {
 
         <FormField
           control={form.control}
-          name="email_address"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email Address</FormLabel>
-              <FormControl>
-                <Input type="email" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="expertise_area"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Expertise Area</FormLabel>
+              <FormLabel>Area of Expertise</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -148,19 +145,62 @@ export function ExpertForm({ expert, onSuccess }: ExpertFormProps) {
             <FormItem>
               <FormLabel>Years of Experience</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  {...field}
-                  onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                />
+                <Input type="number" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : expert ? "Update Expert" : "Add Expert"}
+        <FormField
+          control={form.control}
+          name="bio"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Bio</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="is_in_core_group"
+          render={({ field }) => (
+            <FormItem className="flex items-center gap-2">
+              <FormControl>
+                <input
+                  type="checkbox"
+                  checked={field.value}
+                  onChange={field.onChange}
+                  className="h-4 w-4"
+                />
+              </FormControl>
+              <FormLabel className="mt-0">Core Group Member</FormLabel>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="starting_ref_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Starting Reference ID</FormLabel>
+              <FormControl>
+                <Input type="number" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button type="submit" className="w-full">
+          {expert ? "Update Expert" : "Add Expert"}
         </Button>
       </form>
     </Form>
