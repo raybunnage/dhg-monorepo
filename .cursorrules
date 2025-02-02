@@ -665,6 +665,32 @@
             "card": "bg-white shadow rounded-lg p-6"
           }
         }
+      },
+      {
+        "type": "PackageManager",
+        "description": "Always use pnpm for package management",
+        "packageManager": {
+          "name": "pnpm",
+          "version": ">=9.0.0",
+          "commands": {
+            "install": "pnpm install",
+            "add": "pnpm add",
+            "remove": "pnpm remove",
+            "run": "pnpm",
+            "global": "pnpm add -g"
+          },
+          "forbidden": {
+            "npm": "Use pnpm instead of npm",
+            "yarn": "Use pnpm instead of yarn"
+          }
+        },
+        "monorepo": {
+          "workspaceCommands": {
+            "install": "pnpm install",
+            "addToApp": "pnpm add -D package-name --filter app-name",
+            "run": "pnpm --filter app-name command"
+          }
+        }
       }
     ],
     "fileTypes": {

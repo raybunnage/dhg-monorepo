@@ -1,5 +1,20 @@
 {
   "framework": "vite",
-  "buildCommand": "pnpm build",
-  "outputDirectory": "dist"
-} 
+  "buildCommand": "pnpm turbo build",
+  "devCommand": "pnpm dev",
+  "outputDirectory": "dist",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet ./",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "development": true,
+      "feature/*": true,
+      "preview": true
+    }
+  }
+}
+

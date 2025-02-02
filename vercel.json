@@ -12,7 +12,8 @@
     "apps/dhg-lovable": {
       "root": "apps/dhg-lovable",
       "sourceRoot": "apps/dhg-lovable",
-      "projectFile": "apps/dhg-lovable/vercel.project.json"
+      "buildCommand": "pnpm turbo build",
+      "framework": "vite"
     },
     "apps/dhg-test": {
       "root": "apps/dhg-test"
