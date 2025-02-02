@@ -1,5 +1,0 @@
-Branch: feature/add-dhg-lovable
-Timestamp: 20250202_100343
-Files:
-  - apps/dhg-baseline/.env
-  - apps/dhg-test/.env

@@ -1,5 +1,0 @@
-Branch: feature/signup2
-Timestamp: 20250130_190302
-Files:
-  - apps/dhg-baseline/.env
-  - apps/dhg-test/.env
