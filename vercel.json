@@ -10,7 +10,8 @@
       "root": "apps/dhg-baseline"
     },
     "apps/dhg-lovable": {
-      "root": "apps/dhg-lovable"
+      "root": "apps/dhg-lovable",
+      "sourceRoot": "apps/dhg-lovable"
     },
     "apps/dhg-test": {
       "root": "apps/dhg-test"
