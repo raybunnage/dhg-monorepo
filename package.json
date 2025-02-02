@@ -9,6 +9,7 @@
     "dev": "kill-port 5177 5178 5179 && pnpm -r --parallel run dev",
     "frontend": "./scripts/start-frontend.sh",
     "build": "pnpm --filter './apps/*' build",
+    "build:lovable": "pnpm --filter dhg-lovable build",
     "lint": "turbo run lint",
     "test": "pnpm -r test",
     "test:baseline": "pnpm --filter dhg-baseline test",
