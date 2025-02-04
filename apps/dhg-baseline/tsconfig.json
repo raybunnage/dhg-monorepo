@@ -24,7 +24,11 @@
 
     "types": [
       "vite/client"
-    ]
+    ],
+
+    "paths": {
+      "../lib/supabase": ["../../lib/supabase"]
+    }
   },
   "include": ["src"],
   "exclude": ["node_modules"],

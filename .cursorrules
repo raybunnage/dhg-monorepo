@@ -697,6 +697,38 @@
     "packageManagement": {
       "type": "monorepo",
       "packageManager": "pnpm",
+      "commandLocation": {
+        "root": {
+          "description": "Commands that must be run from repository root",
+          "commands": [
+            "pnpm install",
+            "pnpm build",
+            "git commands",
+            "turbo run build",
+            "pnpm add -w"
+          ],
+          "explanation": "These commands affect the entire workspace and need access to the root configuration"
+        },
+        "app": {
+          "description": "Commands that should be run from app directory (apps/app-name)",
+          "commands": [
+            "vite",
+            "vitest",
+            "local development server",
+            "tailwind config commands"
+          ],
+          "explanation": "These commands are app-specific and need access to local app configuration"
+        },
+        "either": {
+          "description": "Commands that can be run from either location",
+          "commands": [
+            "pnpm add --filter app-name",
+            "pnpm remove --filter app-name",
+            "pnpm run test --filter app-name"
+          ],
+          "explanation": "These commands use the --filter flag to target specific apps"
+        }
+      },
       "rules": [
         {
           "name": "package-installation",
