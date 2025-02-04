@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 export const Header = () => {
-  const navigate = useNavigate();
+  // Remove unused navigate if not needed, or use it in the component
 
   return (
     <header className="border-b bg-white">

@@ -27,8 +27,6 @@ interface DocumentType {
 
 export default function DocumentTypes() {
   const [documentTypes, setDocumentTypes] = useState<DocumentType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedDocType, setSelectedDocType] = useState<DocumentType | null>(null);
   const { toast } = useToast();
 
   const fetchDocumentTypes = async () => {
@@ -47,8 +45,6 @@ export default function DocumentTypes() {
         description: "Failed to load document types",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -127,7 +123,6 @@ export default function DocumentTypes() {
                           <Button
                             variant="outline"
                             size="icon"
-                            onClick={() => setSelectedDocType(docType)}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
