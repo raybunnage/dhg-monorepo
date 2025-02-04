@@ -10,6 +10,10 @@ env/
 venv/
 ENV/
 
+# Backup files
+.backups/
+.backups/**/*
+
 # Build outputs
 dist/
 build/
