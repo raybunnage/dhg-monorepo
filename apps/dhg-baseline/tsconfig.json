@@ -27,7 +27,7 @@
     ],
 
     "paths": {
-      "../lib/supabase": ["../../lib/supabase"]
+      "@lib/supabase": ["../../lib/supabase"]
     }
   },
   "include": ["src"],
