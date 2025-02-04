@@ -1,0 +1,12 @@
+[build]
+  command = "pnpm build"
+  publish = "apps/dhg-lovable/dist"
+  base = "/"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_FLAGS = "--version"
+  PNPM_VERSION = "9.15.3"
+
+[[plugins]]
+  package = "@netlify/plugin-pnpm" 
