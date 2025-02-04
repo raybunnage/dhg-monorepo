@@ -9,4 +9,10 @@
   PNPM_VERSION = "9.15.3"
 
 [[plugins]]
-  package = "@netlify/plugin-pnpm" 
+  package = "@netlify/plugin-pnpm"
+
+# Redirect configuration for main domain
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200 

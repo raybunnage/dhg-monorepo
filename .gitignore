@@ -95,3 +95,6 @@ wheels/
 .ngrok/
 .ngrok.yml
 ngrok.yml
+
+# Local Netlify folder
+.netlify
