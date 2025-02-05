@@ -1,7 +1,0 @@
-{
-  "name": "dhg-test",
-  "framework": "vite",
-  "buildCommand": "cd ../.. && pnpm install && cd apps/dhg-test && pnpm build",
-  "outputDirectory": "dist",
-  "installCommand": "pnpm install"
-}
