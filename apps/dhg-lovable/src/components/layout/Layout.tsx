@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { Header } from './Header'
-import { EnvironmentBanner } from '../EnvironmentBanner'
-import { DebugPanel } from '../DebugPanel'
+import { EnvironmentBanner } from '@/components/EnvironmentBanner'
+import { DebugPanel } from '@/components/DebugPanel'
 
 export function Layout() {
   return (

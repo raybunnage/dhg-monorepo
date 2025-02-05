@@ -30,6 +30,8 @@ export function EnvironmentBanner() {
   const apiUrl = import.meta.env.VITE_API_URL
   const styles = envStyles[env as keyof typeof envStyles]
 
+  console.log('Environment Banner:', env) // Debug log
+
   // Hide banner after 5 seconds in production
   useEffect(() => {
     if (env === 'production') {

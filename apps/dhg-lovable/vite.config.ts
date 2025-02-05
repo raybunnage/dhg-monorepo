@@ -5,10 +5,7 @@ import path from 'path'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   
-  console.log('Vite Config Environment:', {
-    mode,
-    has_api_url: !!env.VITE_API_URL
-  })
+  console.log('Current environment:', env.VITE_APP_ENV)
 
   return {
     base: '/',
