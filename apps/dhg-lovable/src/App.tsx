@@ -3,6 +3,15 @@ import Index from "@/pages/Index";
 import Experts from "@/pages/Experts";
 import DocumentTypes from "@/pages/DocumentTypes";
 import NotFound from "@/pages/NotFound";
+import { Layout } from './components/layout/Layout'
+
+// Debug environment variables
+console.log('Environment Variables:', {
+  env: import.meta.env.VITE_APP_ENV,
+  api: import.meta.env.VITE_API_URL,
+  supabase: import.meta.env.VITE_SUPABASE_URL,
+  appUrl: import.meta.env.VITE_APP_URL
+})
 
 function App() {
   console.log("App rendering, available components:", {
