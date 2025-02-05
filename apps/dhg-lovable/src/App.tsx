@@ -23,10 +23,12 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/experts" element={<Experts />} />
-        <Route path="/document-types" element={<DocumentTypes />} />
-        <Route path="*" element={<NotFound />} />
+        <Route element={<Layout />}>
+          <Route path="/" element={<Index />} />
+          <Route path="/experts" element={<Experts />} />
+          <Route path="/document-types" element={<DocumentTypes />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
       </Routes>
     </Router>
   );
