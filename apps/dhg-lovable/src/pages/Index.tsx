@@ -15,56 +15,47 @@ const Index = () => {
 
   return (
     <MainLayout>
-      <div className="max-w-4xl mx-auto text-center mb-12">
-        <h1 className="text-4xl font-bold text-primary mb-4">
-          Dynamic Healing Discussion Group
-        </h1>
-        <p className="text-xl text-gray-600 mb-8">
-          Exploring the Neurophysiological Foundations of Chronic Disease Through Expert Collaboration
-        </p>
-        
-        {/* Meeting Info Section */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg mb-8">
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="flex flex-col items-center">
-              <CalendarDays className="w-8 h-8 text-primary mb-2" />
-              <h3 className="font-semibold mb-1">Regular Meetings</h3>
-              <p className="text-sm text-gray-600">1st & 3rd Wednesdays</p>
-              <p className="text-sm text-gray-600">5 PM PT / 8 PM ET</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <Users className="w-8 h-8 text-primary mb-2" />
-              <h3 className="font-semibold mb-1">Join Us</h3>
-              <Button 
-                variant="link" 
-                className="text-sm text-blue-600 hover:text-blue-800"
-                onClick={() => handleExternalLink(ZOOM_LINK)}
-              >
-                Zoom Meetings
-              </Button>
-            </div>
-            <div className="flex flex-col items-center">
-              <BookOpen className="w-8 h-8 text-primary mb-2" />
-              <h3 className="font-semibold mb-1">Past Recordings</h3>
-              <Button 
-                variant="link" 
-                className="text-sm text-blue-600 hover:text-blue-800"
-                onClick={() => handleExternalLink(ARCHIVES_LINK)}
-              >
-                Access Archives
-              </Button>
-            </div>
+      {/* Meeting Info Section */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg mb-8">
+        <div className="grid md:grid-cols-3 gap-6">
+          <div className="flex flex-col items-center">
+            <CalendarDays className="w-8 h-8 text-primary mb-2" />
+            <h3 className="font-semibold mb-1">Regular Meetings</h3>
+            <p className="text-sm text-gray-600">1st & 3rd Wednesdays</p>
+            <p className="text-sm text-gray-600">5 PM PT / 8 PM ET</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <Users className="w-8 h-8 text-primary mb-2" />
+            <h3 className="font-semibold mb-1">Join Us</h3>
+            <Button 
+              variant="link" 
+              className="text-sm text-blue-600 hover:text-blue-800"
+              onClick={() => handleExternalLink(ZOOM_LINK)}
+            >
+              Zoom Meetings
+            </Button>
+          </div>
+          <div className="flex flex-col items-center">
+            <BookOpen className="w-8 h-8 text-primary mb-2" />
+            <h3 className="font-semibold mb-1">Past Recordings</h3>
+            <Button 
+              variant="link" 
+              className="text-sm text-blue-600 hover:text-blue-800"
+              onClick={() => handleExternalLink(ARCHIVES_LINK)}
+            >
+              Access Archives
+            </Button>
           </div>
         </div>
+      </div>
 
-        <div className="flex gap-4 justify-center mb-12">
-          <Button size="lg" className="bg-primary hover:bg-primary/90" asChild>
-            <Link to="/experts/">View Our Experts</Link>
-          </Button>
-          <Button size="lg" className="bg-secondary hover:bg-secondary/90" asChild>
-            <Link to="/document-types">Browse Resources</Link>
-          </Button>
-        </div>
+      <div className="flex gap-4 justify-center mb-12">
+        <Button size="lg" className="bg-primary hover:bg-primary/90" asChild>
+          <Link to="/experts/">View Our Experts</Link>
+        </Button>
+        <Button size="lg" className="bg-secondary hover:bg-secondary/90" asChild>
+          <Link to="/document-types">Browse Resources</Link>
+        </Button>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
