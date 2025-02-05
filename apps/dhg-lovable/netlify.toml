@@ -43,5 +43,11 @@
   to = "/index.html"
   status = 200
 
+# Force HTTPS
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
 [[plugins]]
   package = "@netlify/plugin-lighthouse" 
