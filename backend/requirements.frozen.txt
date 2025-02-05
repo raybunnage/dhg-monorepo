@@ -47,6 +47,7 @@ pydantic==2.4.2
 pydantic-core==2.10.1
 pydantic-settings==2.1.0
 pygments==2.19.1
+pyngrok==7.2.3
 pytest==7.4.0
 pytest-asyncio==0.21.1
 pytest-cov==4.1.0

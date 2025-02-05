@@ -13,6 +13,8 @@
     "lint": "turbo run lint",
     "test": "pnpm -r test",
     "test:baseline": "pnpm --filter dhg-baseline test",
+    "test:lovable": "pnpm --filter dhg-lovable test",
+    "lint:lovable": "pnpm --filter dhg-lovable lint",
     "backend": "./scripts/start-backend-safe.sh",
     "backend:test": "./scripts/setup-backend-tests.sh",
     "backend:sync": "cd backend && source .venv/bin/activate && uv pip install -r requirements.txt && uv pip freeze > requirements.frozen.txt",
