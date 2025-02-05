@@ -8,9 +8,9 @@
   environment = { 
     NODE_ENV = "production",
     VITE_APP_ENV = "production",
-    VITE_API_URL = "https://api.dhg-hub.org",
+    VITE_API_URL = "https://golden-snickerdoodle-c35f38.netlify.app/api",
     VITE_SUPABASE_URL = "https://jdksnfkupzywjdfefkyj.supabase.co",
-    VITE_APP_URL = "https://dhg-hub.org"
+    VITE_APP_URL = "https://golden-snickerdoodle-c35f38.netlify.app"
   }
 
 # Staging environment (development branch)
@@ -48,6 +48,13 @@
   for = "/*"
   [headers.values]
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+# Handle www redirect
+[[redirects]]
+  from = "https://www.dhg-hub.org/*"
+  to = "https://dhg-hub.org/:splat"
+  status = 301
+  force = true
 
 [[plugins]]
   package = "@netlify/plugin-lighthouse" 
