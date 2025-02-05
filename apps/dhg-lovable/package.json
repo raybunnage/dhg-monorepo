@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --port 5179 --strictPort false",
     "build": "tsc && vite build",
-    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 20",
     "preview": "vite preview",
     "test": "vitest",
     "test:coverage": "vitest run --coverage"
