@@ -10,3 +10,6 @@
 
 # [[plugins]]
 #   package = "@netlify/build-plugin-pnpm" 
+
+[context.branch-deploy]
+  command = "cd ../.. && pnpm install && cd apps/dhg-lovable && pnpm build:app" 

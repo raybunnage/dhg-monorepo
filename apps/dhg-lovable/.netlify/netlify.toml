@@ -1,0 +1,34 @@
+functionsDirectory = "/Users/raybunnage/Documents/github/dhg-monorepo/apps/dhg-lovable/netlify/functions"
+functionsDirectoryOrigin = "ui"
+plugins = []
+headers = []
+redirects = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "/Users/raybunnage/Documents/github/dhg-monorepo/apps/dhg-lovable/dist"
+publishOrigin = "config"
+commandOrigin = "config"
+base = "/Users/raybunnage/Documents/github/dhg-monorepo/apps/dhg-lovable"
+command = "cd ../.. && pnpm install && cd apps/dhg-lovable && pnpm build:app"
+functions = "/Users/raybunnage/Documents/github/dhg-monorepo/apps/dhg-lovable/netlify/functions"
+
+[build.environment]
+NODE_VERSION = "18"
+NPM_FLAGS = "--version"
+PNPM_VERSION = "9.15.3"
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
