@@ -1,6 +1,6 @@
 [build]
   base = "apps/dhg-lovable"
-  command = "pnpm build"
+  command = "cd ../.. && pnpm install && cd apps/dhg-lovable && pnpm build:app"
   publish = "dist"
 
 [build.environment]

@@ -16,12 +16,5 @@
       "outputs": []
     }
   },
-  "pipeline": {
-    "build": {
-      "outputs": ["dist/**"]
-    },
-    "dhg-lovable#build": {
-      "outputs": ["apps/dhg-lovable/dist/**"]
-    }
-  }
+  "globalDependencies": ["**/.env.*local"]
 }
