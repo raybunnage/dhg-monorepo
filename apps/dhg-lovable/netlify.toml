@@ -1,6 +1,6 @@
 [build]
   base = "apps/dhg-lovable"
-  command = "cd ../.. && pnpm install && cd apps/dhg-lovable && pnpm build"
+  command = "cd ../.. && pnpm install --no-frozen-lockfile && cd apps/dhg-lovable && pnpm tsc --noEmit --pretty && pnpm vite build --debug"
   publish = "dist"
 
 [build.environment]
