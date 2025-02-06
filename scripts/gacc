@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Check if we're in an app directory or root
+if [[ $PWD == */apps/* ]]; then
+    # In app directory, go to monorepo root first
+    cd $(git rev-parse --show-toplevel)
+fi
+
+# Now at monorepo root, run git commands
+git add .
+git commit -m "$1" 
