@@ -97,4 +97,5 @@ wheels/
 ngrok.yml
 
 # Local Netlify folder
-.netlify
+.netlify/*
+!.netlify/state.json
