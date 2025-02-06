@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 5179 --strictPort false",
-    "build": "tsc --noEmit --pretty && vite build --debug",
+    "build": "tsc --noEmit && vite build",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 20",
     "preview": "vite preview",
     "test": "vitest",

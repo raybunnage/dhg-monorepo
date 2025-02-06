@@ -1,11 +1,16 @@
 [build]
   base = "apps/dhg-lovable"
-  command = "cd ../.. && pnpm install --no-frozen-lockfile && cd apps/dhg-lovable && pnpm tsc --noEmit --pretty && pnpm vite build --debug"
+  command = "cd ../.. && pnpm install && cd apps/dhg-lovable && pnpm build"
   publish = "dist"
+
+[dev]
+  # Use the same command that works locally
+  command = "pnpm exec vite"
+  targetPort = 5179
+  port = 8888
 
 [build.environment]
   NODE_VERSION = "18"
-  NPM_FLAGS = "--version"
   PNPM_VERSION = "9.15.3"
 
 # [[plugins]]
