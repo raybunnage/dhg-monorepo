@@ -665,6 +665,46 @@
             "card": "bg-white shadow rounded-lg p-6"
           }
         }
+      },
+      {
+        "type": "DeploymentPlatform",
+        "description": "Specify deployment platform for all commands and configurations",
+        "rules": {
+          "platform": {
+            "name": "Netlify",
+            "configFiles": {
+              "required": ["netlify.toml"],
+              "optional": [".netlifyrc", ".env.local"]
+            },
+            "cliCommands": {
+              "install": "npm install -g netlify-cli",
+              "login": "netlify login",
+              "init": "netlify init",
+              "deploy": "netlify deploy",
+              "build": "netlify build"
+            }
+          },
+          "requirements": [
+            "Always specify Netlify as deployment platform",
+            "Remove any references to other deployment platforms",
+            "Use netlify.toml for configuration",
+            "Follow Netlify-specific build and deploy patterns"
+          ],
+          "examples": {
+            "configFile": {
+              "netlify.toml": {
+                "build": {
+                  "command": "pnpm build",
+                  "publish": "dist"
+                }
+              }
+            },
+            "commands": {
+              "preview": "netlify deploy --build",
+              "production": "netlify deploy --build --prod"
+            }
+          }
+        }
       }
     ],
     "fileTypes": {

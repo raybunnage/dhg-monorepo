@@ -19,7 +19,6 @@
     "turbo-ignore": "node -e \"process.exit(require('turbo').shouldOptimize(__dirname))\""
   },
   "devDependencies": {
-    "@vercel/node": "^5.0.2",
     "turbo": "latest",
     "kill-port": "^2.0.1"
   }
