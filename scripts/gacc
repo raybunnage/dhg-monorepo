@@ -7,5 +7,5 @@ if [[ $PWD == */apps/* ]]; then
 fi
 
 # Now at monorepo root, run git commands
-git add .
-git commit -m "$1" 
+/usr/bin/git add .
+/usr/bin/git commit -m "$1" 
