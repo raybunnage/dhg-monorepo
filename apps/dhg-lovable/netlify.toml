@@ -8,5 +8,5 @@
   NPM_FLAGS = "--version"
   PNPM_VERSION = "9.15.3"
 
-[[plugins]]
-  package = "@netlify/plugin-pnpm" 
+# [[plugins]]
+#   package = "@netlify/build-plugin-pnpm" 

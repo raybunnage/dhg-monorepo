@@ -97,3 +97,5 @@ ngrok.yml
 .backups/**/*
 **/.backups/
 **/.backups/**/*
+# Local Netlify folder
+.netlify
