@@ -30,6 +30,13 @@
 
     "types": [
       "vite/client"
+    ],
+
+    "composite": true,
+    "allowSyntheticDefaultImports": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/@types"
     ]
   },
   "include": ["src"],
