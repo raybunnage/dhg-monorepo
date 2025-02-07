@@ -98,3 +98,7 @@ ngrok.yml
 
 # Local Netlify folder
 .netlify
+
+# Ignore file_types directory completely
+/file_types/
+/file_types/**/*
