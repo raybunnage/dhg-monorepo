@@ -22,13 +22,15 @@
 
     "esModuleInterop": true,
 
-    "types": [
-      "vite/client"
-    ],
-
+    /* Path Aliases */
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+
+    "types": [
+      "vite/client"
+    ]
   },
   "include": ["src"],
   "exclude": ["node_modules"],
