@@ -1,15 +1,13 @@
-import { type UserConfig, defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import path from 'path'
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import type { UserConfig } from 'vite'
 
-// Using type assertion to ensure correct plugin type
-const config: UserConfig = {
+// Most basic possible config
+export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': new URL('./src', import.meta.url).pathname
     }
   }
-}
-
-export default defineConfig(config)
+} as UserConfig)

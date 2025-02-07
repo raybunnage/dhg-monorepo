@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
+import type { UserConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -38,7 +39,7 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        '@': resolve(__dirname, './src'),
+        '@': new URL('./src', import.meta.url).pathname
       },
     },
     build: {
@@ -80,5 +81,5 @@ export default defineConfig(({ mode }) => {
         ]
       }
     }
-  }
+  } as UserConfig
 })

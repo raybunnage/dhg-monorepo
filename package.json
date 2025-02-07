@@ -19,7 +19,10 @@
     "turbo-ignore": "node -e \"process.exit(require('turbo').shouldOptimize(__dirname))\""
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react-swc": "^3.7.2",
+    "kill-port": "^2.0.1",
     "turbo": "latest",
-    "kill-port": "^2.0.1"
+    "vite": "^6.1.0"
   }
 }
