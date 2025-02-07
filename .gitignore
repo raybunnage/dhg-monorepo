@@ -99,3 +99,6 @@ ngrok.yml
 # Local Netlify folder
 .netlify/*
 !.netlify/state.json
+
+file_types/**/* 
+file_types/
